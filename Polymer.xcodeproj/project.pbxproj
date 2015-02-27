@@ -9,11 +9,17 @@
 /* Begin PBXBuildFile section */
 		8047ABC31A9FF411008093A4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8047ABC21A9FF411008093A4 /* main.m */; };
 		8047ABC61A9FF411008093A4 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8047ABC51A9FF411008093A4 /* AppDelegate.m */; };
-		8047ABC91A9FF411008093A4 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8047ABC81A9FF411008093A4 /* ViewController.m */; };
 		8047ABCC1A9FF411008093A4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8047ABCA1A9FF411008093A4 /* Main.storyboard */; };
 		8047ABCE1A9FF411008093A4 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8047ABCD1A9FF411008093A4 /* Images.xcassets */; };
 		8047ABD11A9FF411008093A4 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8047ABCF1A9FF411008093A4 /* LaunchScreen.xib */; };
 		8047ABDD1A9FF411008093A4 /* PolymerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8047ABDC1A9FF411008093A4 /* PolymerTests.m */; };
+		8047ABEB1A9FF534008093A4 /* PLYEndpoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 8047ABE81A9FF534008093A4 /* PLYEndpoint.m */; };
+		8047ABEC1A9FF534008093A4 /* PLYNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 8047ABEA1A9FF534008093A4 /* PLYNetworking.m */; };
+		8047ABEF1A9FF544008093A4 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8047ABEE1A9FF544008093A4 /* ViewController.m */; };
+		8047ABF81A9FF586008093A4 /* SpotifyArtist.m in Sources */ = {isa = PBXBuildFile; fileRef = 8047ABF31A9FF586008093A4 /* SpotifyArtist.m */; };
+		8047ABF91A9FF586008093A4 /* SpotifyImageRef.m in Sources */ = {isa = PBXBuildFile; fileRef = 8047ABF51A9FF586008093A4 /* SpotifyImageRef.m */; };
+		8047ABFA1A9FF586008093A4 /* SpotifyEndpoints.m in Sources */ = {isa = PBXBuildFile; fileRef = 8047ABF71A9FF586008093A4 /* SpotifyEndpoints.m */; };
+		9F276AD54BD3DF0E8A87EECA /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DE0383B994C08B693808D1F3 /* libPods.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -27,19 +33,32 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3012B6C3FE5EB86E20D2425A /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		8047ABBD1A9FF411008093A4 /* Polymer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Polymer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8047ABC11A9FF411008093A4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8047ABC21A9FF411008093A4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		8047ABC41A9FF411008093A4 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		8047ABC51A9FF411008093A4 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		8047ABC71A9FF411008093A4 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		8047ABC81A9FF411008093A4 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		8047ABC21A9FF411008093A4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = main.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		8047ABC41A9FF411008093A4 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = AppDelegate.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		8047ABC51A9FF411008093A4 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = AppDelegate.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		8047ABCB1A9FF411008093A4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		8047ABCD1A9FF411008093A4 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		8047ABD01A9FF411008093A4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		8047ABD61A9FF411008093A4 /* PolymerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PolymerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8047ABDB1A9FF411008093A4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8047ABDC1A9FF411008093A4 /* PolymerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PolymerTests.m; sourceTree = "<group>"; };
+		8047ABE71A9FF534008093A4 /* PLYEndpoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = PLYEndpoint.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		8047ABE81A9FF534008093A4 /* PLYEndpoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = PLYEndpoint.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		8047ABE91A9FF534008093A4 /* PLYNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLYNetworking.h; sourceTree = "<group>"; };
+		8047ABEA1A9FF534008093A4 /* PLYNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLYNetworking.m; sourceTree = "<group>"; };
+		8047ABED1A9FF544008093A4 /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		8047ABEE1A9FF544008093A4 /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		8047ABF21A9FF586008093A4 /* SpotifyArtist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpotifyArtist.h; sourceTree = "<group>"; };
+		8047ABF31A9FF586008093A4 /* SpotifyArtist.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpotifyArtist.m; sourceTree = "<group>"; };
+		8047ABF41A9FF586008093A4 /* SpotifyImageRef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpotifyImageRef.h; sourceTree = "<group>"; };
+		8047ABF51A9FF586008093A4 /* SpotifyImageRef.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpotifyImageRef.m; sourceTree = "<group>"; };
+		8047ABF61A9FF586008093A4 /* SpotifyEndpoints.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpotifyEndpoints.h; sourceTree = "<group>"; };
+		8047ABF71A9FF586008093A4 /* SpotifyEndpoints.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpotifyEndpoints.m; sourceTree = "<group>"; };
+		A0FBB3DBC2B8B49B82E248CB /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
+		DE0383B994C08B693808D1F3 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +66,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F276AD54BD3DF0E8A87EECA /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -60,12 +80,31 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3CC104FA348DA8081E5005FA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				DE0383B994C08B693808D1F3 /* libPods.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		7CDC12C8988837A7FC16DF12 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				A0FBB3DBC2B8B49B82E248CB /* Pods.debug.xcconfig */,
+				3012B6C3FE5EB86E20D2425A /* Pods.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		8047ABB41A9FF411008093A4 = {
 			isa = PBXGroup;
 			children = (
 				8047ABBF1A9FF411008093A4 /* Polymer */,
 				8047ABD91A9FF411008093A4 /* PolymerTests */,
 				8047ABBE1A9FF411008093A4 /* Products */,
+				7CDC12C8988837A7FC16DF12 /* Pods */,
+				3CC104FA348DA8081E5005FA /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -81,10 +120,12 @@
 		8047ABBF1A9FF411008093A4 /* Polymer */ = {
 			isa = PBXGroup;
 			children = (
+				8047ABE61A9FF534008093A4 /* Source */,
+				8047ABF01A9FF586008093A4 /* Example */,
 				8047ABC41A9FF411008093A4 /* AppDelegate.h */,
 				8047ABC51A9FF411008093A4 /* AppDelegate.m */,
-				8047ABC71A9FF411008093A4 /* ViewController.h */,
-				8047ABC81A9FF411008093A4 /* ViewController.m */,
+				8047ABED1A9FF544008093A4 /* ViewController.h */,
+				8047ABEE1A9FF544008093A4 /* ViewController.m */,
 				8047ABCA1A9FF411008093A4 /* Main.storyboard */,
 				8047ABCD1A9FF411008093A4 /* Images.xcassets */,
 				8047ABCF1A9FF411008093A4 /* LaunchScreen.xib */,
@@ -119,6 +160,38 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		8047ABE61A9FF534008093A4 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				8047ABE71A9FF534008093A4 /* PLYEndpoint.h */,
+				8047ABE81A9FF534008093A4 /* PLYEndpoint.m */,
+				8047ABE91A9FF534008093A4 /* PLYNetworking.h */,
+				8047ABEA1A9FF534008093A4 /* PLYNetworking.m */,
+			);
+			path = Source;
+			sourceTree = "<group>";
+		};
+		8047ABF01A9FF586008093A4 /* Example */ = {
+			isa = PBXGroup;
+			children = (
+				8047ABF11A9FF586008093A4 /* Models */,
+				8047ABF61A9FF586008093A4 /* SpotifyEndpoints.h */,
+				8047ABF71A9FF586008093A4 /* SpotifyEndpoints.m */,
+			);
+			path = Example;
+			sourceTree = "<group>";
+		};
+		8047ABF11A9FF586008093A4 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				8047ABF21A9FF586008093A4 /* SpotifyArtist.h */,
+				8047ABF31A9FF586008093A4 /* SpotifyArtist.m */,
+				8047ABF41A9FF586008093A4 /* SpotifyImageRef.h */,
+				8047ABF51A9FF586008093A4 /* SpotifyImageRef.m */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -126,9 +199,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 8047ABE01A9FF411008093A4 /* Build configuration list for PBXNativeTarget "Polymer" */;
 			buildPhases = (
+				C068E9532B6CA3262178DE83 /* Check Pods Manifest.lock */,
 				8047ABB91A9FF411008093A4 /* Sources */,
 				8047ABBA1A9FF411008093A4 /* Frameworks */,
 				8047ABBB1A9FF411008093A4 /* Resources */,
+				6350524818B642A3B25DD11B /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -214,14 +289,52 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		6350524818B642A3B25DD11B /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C068E9532B6CA3262178DE83 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		8047ABB91A9FF411008093A4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8047ABC91A9FF411008093A4 /* ViewController.m in Sources */,
+				8047ABEC1A9FF534008093A4 /* PLYNetworking.m in Sources */,
+				8047ABEB1A9FF534008093A4 /* PLYEndpoint.m in Sources */,
 				8047ABC61A9FF411008093A4 /* AppDelegate.m in Sources */,
+				8047ABF91A9FF586008093A4 /* SpotifyImageRef.m in Sources */,
 				8047ABC31A9FF411008093A4 /* main.m in Sources */,
+				8047ABEF1A9FF544008093A4 /* ViewController.m in Sources */,
+				8047ABF81A9FF586008093A4 /* SpotifyArtist.m in Sources */,
+				8047ABFA1A9FF586008093A4 /* SpotifyEndpoints.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -341,6 +454,7 @@
 		};
 		8047ABE11A9FF411008093A4 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A0FBB3DBC2B8B49B82E248CB /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = Polymer/Info.plist;
@@ -351,6 +465,7 @@
 		};
 		8047ABE21A9FF411008093A4 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3012B6C3FE5EB86E20D2425A /* Pods.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = Polymer/Info.plist;
@@ -412,6 +527,7 @@
 				8047ABE21A9FF411008093A4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		8047ABE31A9FF411008093A4 /* Build configuration list for PBXNativeTarget "PolymerTests" */ = {
 			isa = XCConfigurationList;
@@ -420,6 +536,7 @@
 				8047ABE51A9FF411008093A4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
