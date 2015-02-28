@@ -34,7 +34,7 @@ static BOOL LOG = NO;
 }
 
 + (AFHTTPRequestOperationManager *)operationManagerWithEndpoint:(PLYEndpoint *)endpoint {
-    
+
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     
     AFHTTPRequestSerializer<AFURLRequestSerialization> *requestSerializer = endpoint.requestSerializer;
@@ -74,6 +74,7 @@ static BOOL LOG = NO;
           success:success
           failure:failure];
 }
+
 + (void)putForEndpoint:(PLYEndpoint *)endpoint
         withCompletion:(void(^)(id object, NSError *error))completion {
     NSString *completeUrl = [self completeUrlForEndpoint:endpoint];
@@ -86,6 +87,7 @@ static BOOL LOG = NO;
          success:success
          failure:failure];
 }
+
 + (void)postForEndpoint:(PLYEndpoint *)endpoint
          withCompletion:(void(^)(id object, NSError *error))completion {
     NSString *completeUrl = [self completeUrlForEndpoint:endpoint];
@@ -98,6 +100,7 @@ static BOOL LOG = NO;
           success:success
           failure:failure];
 }
+
 + (void)patchForEndpoint:(PLYEndpoint *)endpoint
           withCompletion:(void(^)(id object, NSError *error))completion {
     NSString *completeUrl = [self completeUrlForEndpoint:endpoint];
@@ -110,6 +113,7 @@ static BOOL LOG = NO;
            success:success
            failure:failure];
 }
+
 + (void)deleteForEndpoint:(PLYEndpoint *)endpoint
           withCompletion:(void(^)(id object, NSError *error))completion {
     NSString *completeUrl = [self completeUrlForEndpoint:endpoint];
