@@ -11,12 +11,17 @@
 @class AFHTTPRequestSerializer, AFHTTPResponseSerializer;
 @protocol AFURLRequestSerialization, AFURLResponseSerialization;
 
+/**
+ *  Used to specify an argument that takes either an NSDictionary, or an NSArray
+ */
 @protocol PLYParameterEncodableType <NSObject>
 @end
 @interface NSDictionary () <PLYParameterEncodableType>
 @end
 @interface NSArray () <PLYParameterEncodableType>
 @end
+
+#pragma mark - PLYEndpoint
 
 @interface PLYEndpoint : NSObject
 /**
@@ -99,6 +104,7 @@
  *  @return a fully initialized endpoint
  */
 - (instancetype)initWithSlug:(id)slug andParameters:(id<PLYParameterEncodableType>)parameters;
+
 @end
 
 #pragma mark - Networking
@@ -163,6 +169,7 @@
  *  @return a valid type that can be used for mapping.
  */
 - (id<JSONMappableRawType>)transformResponseDataToMappableRawType:(NSData *)responseData;
+
 @end
 
 #pragma mark - Slug Mapping
@@ -189,10 +196,12 @@
 #pragma mark - Slug Mapping
 
 @interface PLYSlugMapping : NSObject
+
 /**
  *  The class type associated with the given mapping -- set nil for default -- If nil, this will apply to all objects passed, including dictionaries
  */
 @property (nonatomic) Class classType;
+
 /**
  *  The mapping to use when trying to convert the given slug object to the slug parameters in the endpoint
  */
@@ -223,11 +232,13 @@
  *  @param key the slug parameter to be associated with the given key path
  */
 - (void)setObject:(id)obj forKeyedSubscript:(id <NSCopying>)key;
+
 @end
 
-#pragma mark - Header Additions
+#pragma mark - Header Mapping
 
 @interface PLYEndpoint (HeaderMapping)
+
 /**
  *  In some cases, a header includes values that need to be appended to the model.  For these situations, the header can be appended to the JSON mapping dictionary.  If the response is a dictionary, an additional field will be added called 'Header', and values can be accessed via keypath syntax, ie: Header.etag.
  *
@@ -251,4 +262,5 @@
  }
  */
 @property (nonatomic, readonly) BOOL shouldAppendHeaderToResponse;
+
 @end
