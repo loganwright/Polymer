@@ -9,7 +9,7 @@
 #import "SpotifyArtist.h"
 
 @implementation SpotifyArtist
-- (NSMutableDictionary *)mapping {
++ (NSDictionary *)mapping {
     NSMutableDictionary *mapping = [NSMutableDictionary dictionary];
     mapping[@"externalSpotifyUrl"] = @"external_urls.spotify";
     mapping[@"numberOfFollowers"] = @"followers.total";

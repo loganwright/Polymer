@@ -191,7 +191,7 @@ af_networkSuccessBlock successBlock(PLYEndpoint *endpoint, dv_responseBlock comp
         }
         
         if ([responseObject isKindOfClass:[NSDictionary class]]) {
-            id object = [[endpoint.returnClass alloc] initWithJSONRepresentation:responseObject];
+            id object = [endpoint.returnClass newObjectWithJSONRepresentation:responseObject];
             completion(object, nil);
         } else if ([responseObject isKindOfClass:[NSArray class]]) {
             NSArray *objects = [responseObject jm_mapToJSONMappableClass:endpoint.returnClass];
@@ -199,7 +199,7 @@ af_networkSuccessBlock successBlock(PLYEndpoint *endpoint, dv_responseBlock comp
         } else if ([responseObject isKindOfClass:[NSString class]]) {
             NSDictionary *dictionaryRepresentation = parameterStringToDictionary(responseObject);
             if (dictionaryRepresentation) {
-                id object = [[endpoint.returnClass alloc] initWithJSONRepresentation:dictionaryRepresentation];
+                id object = [endpoint.returnClass newObjectWithJSONRepresentation:dictionaryRepresentation];
                 completion(object, nil);
             } else {
                 if (LOG) {

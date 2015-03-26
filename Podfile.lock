@@ -20,7 +20,7 @@ PODS:
   - AFNetworking/UIKit (2.5.1):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
-  - JSONMapping (0.1)
+  - JSONMapping (0.1.4)
 
 DEPENDENCIES:
   - AFNetworking
@@ -28,6 +28,6 @@ DEPENDENCIES:
 
 SPEC CHECKSUMS:
   AFNetworking: 8bee59492a6ff15d69130efa4d0dc67e0094a52a
-  JSONMapping: 7583daebe0d5108ce1939b814801e6f73ae6b0ca
+  JSONMapping: 67d0be6d8703bc4ed5e9f21addbe0b2f4f16db6a
 
 COCOAPODS: 0.35.0

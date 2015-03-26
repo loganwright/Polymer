@@ -9,7 +9,7 @@
 #import "SpotifyImageRef.h"
 
 @implementation SpotifyImageRef
-- (NSMutableDictionary *)mapping {
++ (NSDictionary *)mapping {
     NSMutableDictionary *mapping = [NSMutableDictionary dictionary];
     mapping[@"height"] = @"height";
     mapping[@"width"] = @"width";
