@@ -22,18 +22,24 @@ static BOOL LOG = NO;
 
 @implementation PLYEndpoint
 
+#pragma mark - Initialization
+
 + (instancetype)endpoint {
     return [self endpointWithSlug:nil andParameters:nil];
 }
+
 + (instancetype)endpointWithSlug:(id)slug {
     return [self endpointWithSlug:slug andParameters:nil];
 }
+
 - (instancetype)initWithSlug:(id)slug {
     return [self initWithSlug:slug andParameters:nil];
 }
+
 + (instancetype)endpointWithParameters:(id<PLYParameterEncodableType>)parameters {
     return [self endpointWithSlug:nil andParameters:parameters];
 }
+
 - (instancetype)initWithParameters:(id<PLYParameterEncodableType>)parameters {
     return [self initWithSlug:nil andParameters:parameters];
 }
@@ -41,6 +47,7 @@ static BOOL LOG = NO;
 + (instancetype)endpointWithSlug:(id)slug andParameters:(id<PLYParameterEncodableType>)parameters {
     return [[self alloc] initWithSlug:slug andParameters:parameters];
 }
+
 - (instancetype)initWithSlug:(id)slug andParameters:(id<PLYParameterEncodableType>)parameters {
     self = [self init];
     if (self) {
@@ -49,6 +56,8 @@ static BOOL LOG = NO;
     }
     return self;
 }
+
+#pragma mark - Endpoint Creation
 
 - (NSString *)populatedEndpointUrl {
     NSMutableString *url = [NSMutableString string];
@@ -100,11 +109,12 @@ static BOOL LOG = NO;
     return mapping;
 }
 
-#pragma mark - Overrides
+#pragma mark - URL Component Overrides
 
 /*
  These values are intended to be overridden in a subclass!
  */
+
 - (NSString *)baseUrl {
     NSString *reason = [NSString stringWithFormat:@"Must be overriden by subclass! %@",
                         NSStringFromClass([self class])];
@@ -112,6 +122,7 @@ static BOOL LOG = NO;
                                    reason:reason
                                  userInfo:nil];
 }
+
 - (NSString *)endpointUrl {
     NSString *reason = [NSString stringWithFormat:@"Must be overriden by subclass! %@",
                         NSStringFromClass([self class])];
@@ -135,18 +146,22 @@ static BOOL LOG = NO;
 @implementation PLYEndpoint (Networking)
 
 #pragma mark - Configuring
+
 /*
  These are intended to be overridden by an endpoint if it has values that need to be added
  */
 - (NSSet *)acceptableContentTypes {
     return nil;
 }
+
 - (NSDictionary *)headerFields {
     return nil;
 }
+
 - (AFHTTPRequestSerializer<AFURLRequestSerialization> *)requestSerializer {
     return nil;
 }
+
 - (AFHTTPResponseSerializer<AFURLResponseSerialization> *)responseSerializer {
     return nil;
 }
@@ -156,22 +171,38 @@ static BOOL LOG = NO;
 - (void)getWithCompletion:(void(^)(id object, NSError *error))completion {
     [PLYNetworking getForEndpoint:self withCompletion:completion];
 }
+
 - (void)putWithCompletion:(void(^)(id object, NSError *error))completion {
     [PLYNetworking putForEndpoint:self withCompletion:completion];
 }
+
 - (void)postWithCompletion:(void(^)(id object, NSError *error))completion {
     [PLYNetworking postForEndpoint:self withCompletion:completion];
 }
+
 - (void)patchWithCompletion:(void(^)(id object, NSError *error))completion {
     [PLYNetworking patchForEndpoint:self withCompletion:completion];
 }
+
 - (void)deleteWithCompletion:(void(^)(id object, NSError *error))completion {
     [PLYNetworking deleteForEndpoint:self withCompletion:completion];
 }
 
 #pragma mark - Response Data Transformer
 
+/**
+ *  When data is received from a request that hasn't been converted to a dictionary, string, or array, we use this to try and convert the data to one of these mappable types.  The most common form of this is when receiving raw xml data.  This raw xml data would need to be converted to a JSONMappableRawType (dictionary, string, or array).  Override this in your endpoint subclass to convert appropriately.
+ *
+ *  @param responseData the data received from the request
+ *
+ *  @return a type that can be used to map to the return class.
+ */
 - (id<JSONMappableRawType>)transformResponseDataToMappableRawType:(NSData *)responseData {
+    
+    if (LOG) {
+        NSLog(@"Transforming responseData for endpoint : %@", [self class]);
+    }
+    
     /*
      This is the default transformer that attempts to handle when data is received from a url.  Override this for custom behavior.
      */
@@ -196,25 +227,31 @@ static BOOL LOG = NO;
 #pragma mark - Slug Mapping
 
 @implementation PLYEndpoint (Slugs)
+
 - (NSArray *)slugClassMappings {
     return @[];
 }
+
 - (NSDictionary *)nilSlugMapping {
     return @{};
 }
+
 @end
 
 #pragma mark - Slug Mapping
 
 @implementation PLYSlugMapping
+
 + (instancetype)slugMappingWithClass:(Class)classType {
     PLYSlugMapping *new = [PLYSlugMapping new];
     new.classType = classType;
     return new;
 }
+
 - (id)objectForKeyedSubscript:(id <NSCopying>)key {
     return self.mapping[key];
 }
+
 - (void)setObject:(id)obj forKeyedSubscript:(id <NSCopying>)key {
     if (obj) {
         self.mapping[key] = obj;
@@ -222,19 +259,23 @@ static BOOL LOG = NO;
         [self.mapping removeObjectForKey:key];
     }
 }
+
 - (NSMutableDictionary *)mapping {
     if (!_mapping) {
         _mapping = [NSMutableDictionary dictionary];
     }
     return _mapping;
 }
+
 @end
 
 #pragma mark - Header Mapping
 
 @implementation PLYEndpoint (HeaderMapping)
+
 - (BOOL)shouldAppendHeaderToResponse {
     return NO;
 }
+
 @end
 

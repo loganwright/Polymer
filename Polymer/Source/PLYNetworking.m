@@ -34,7 +34,7 @@ static BOOL LOG = NO;
 }
 
 + (AFHTTPRequestOperationManager *)operationManagerWithEndpoint:(PLYEndpoint *)endpoint {
-    
+
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     
     AFHTTPRequestSerializer<AFURLRequestSerialization> *requestSerializer = endpoint.requestSerializer;
@@ -74,6 +74,7 @@ static BOOL LOG = NO;
           success:success
           failure:failure];
 }
+
 + (void)putForEndpoint:(PLYEndpoint *)endpoint
         withCompletion:(void(^)(id object, NSError *error))completion {
     NSString *completeUrl = [self completeUrlForEndpoint:endpoint];
@@ -86,6 +87,7 @@ static BOOL LOG = NO;
          success:success
          failure:failure];
 }
+
 + (void)postForEndpoint:(PLYEndpoint *)endpoint
          withCompletion:(void(^)(id object, NSError *error))completion {
     NSString *completeUrl = [self completeUrlForEndpoint:endpoint];
@@ -98,6 +100,7 @@ static BOOL LOG = NO;
           success:success
           failure:failure];
 }
+
 + (void)patchForEndpoint:(PLYEndpoint *)endpoint
           withCompletion:(void(^)(id object, NSError *error))completion {
     NSString *completeUrl = [self completeUrlForEndpoint:endpoint];
@@ -110,6 +113,7 @@ static BOOL LOG = NO;
            success:success
            failure:failure];
 }
+
 + (void)deleteForEndpoint:(PLYEndpoint *)endpoint
           withCompletion:(void(^)(id object, NSError *error))completion {
     NSString *completeUrl = [self completeUrlForEndpoint:endpoint];
@@ -191,7 +195,7 @@ af_networkSuccessBlock successBlock(PLYEndpoint *endpoint, dv_responseBlock comp
         }
         
         if ([responseObject isKindOfClass:[NSDictionary class]]) {
-            id object = [endpoint.returnClass newObjectWithJSONRepresentation:responseObject inResponseContext:responseObject];
+            id object = [endpoint.returnClass jm_newObjectWithJSONRepresentation:responseObject inResponseContext:responseObject];
             completion(object, nil);
         } else if ([responseObject isKindOfClass:[NSArray class]]) {
             NSArray *objects = [responseObject jm_mapToJSONMappableClass:endpoint.returnClass inResponseContext:responseObject];
@@ -199,7 +203,7 @@ af_networkSuccessBlock successBlock(PLYEndpoint *endpoint, dv_responseBlock comp
         } else if ([responseObject isKindOfClass:[NSString class]]) {
             NSDictionary *dictionaryRepresentation = parameterStringToDictionary(responseObject);
             if (dictionaryRepresentation) {
-                id object = [endpoint.returnClass newObjectWithJSONRepresentation:dictionaryRepresentation inResponseContext:responseObject];
+                id object = [endpoint.returnClass jm_newObjectWithJSONRepresentation:dictionaryRepresentation inResponseContext:responseObject];
                 completion(object, nil);
             } else {
                 if (LOG) {
