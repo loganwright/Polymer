@@ -21,18 +21,21 @@
 @interface NSArray () <PLYParameterEncodableType>
 @end
 
-#pragma mark - PLYEndpoint
-
 @interface PLYEndpoint : NSObject
+
+#pragma mark - Config
+
 /**
  *  Use this to configure the base Url.  An ideal architecture only overrides this in one base class and then each endpoint subclasses from there
  */
 @property (nonatomic, readonly, copy) NSString *baseUrl;
+
 /**
  *  The endpoint url that will be appended to the end of the base url, or a complete URL
  *  Example:  @"/repos/:owner/:name/issues/:identifier"
  */
 @property (nonatomic, readonly, copy) NSString *endpointUrl;
+
 /**
  *  The type of class that is returned from this endpoint.
  *
@@ -43,7 +46,9 @@
 /**
  *  The key to use when parsing a JSON response.
  */
-@property (nonatomic, readonly) NSString *responseKeyPath;
+@property (nonatomic, readonly, copy) NSString *responseKeyPath;
+
+#pragma mark - Initialization
 
 /**
  *  Initializes a new endpoint with an empty slug and an empty query parameters
@@ -60,6 +65,7 @@
  *  @return a fully initialized endpoint
  */
 + (instancetype)endpointWithSlug:(id)slug;
+
 /**
  *  Initializes the endpoint with the given slug to populate
  *
@@ -77,6 +83,7 @@
  *  @return a fully initialized endpoint
  */
 + (instancetype)endpointWithParameters:(id<PLYParameterEncodableType>)parameters;
+
 /**
  *  Initializes the endpoint with the given query parameters to populate
  *
@@ -94,7 +101,9 @@
  *
  *  @return a fully initialized endpoint
  */
-+ (instancetype)endpointWithSlug:(id)slug andParameters:(id<PLYParameterEncodableType>)parameters;
++ (instancetype)endpointWithSlug:(id)slug
+                   andParameters:(id<PLYParameterEncodableType>)parameters;
+
 /**
  *  Initializes the endpoint with the given slug and query parameters
  *
@@ -103,7 +112,32 @@
  *
  *  @return a fully initialized endpoint
  */
-- (instancetype)initWithSlug:(id)slug andParameters:(id<PLYParameterEncodableType>)parameters;
+- (instancetype)initWithSlug:(id)slug
+               andParameters:(id<PLYParameterEncodableType>)parameters NS_DESIGNATED_INITIALIZER;
+
+#pragma mark - Slug Mapping
+
+/**
+ *  Use this to prevent a value from being set to a slug, for example an NSInteger identifier might be invalid if it has a value of 0, or less than one and shouldn't be appended to the url.
+ *
+ *  @param value    the value that will be injected into the url
+ *  @param slugPath the path that will be replaced
+ *
+ *  @return whether or not to inject this value into the url at the given slug path
+ */
+- (BOOL)valueIsValid:(id)value
+         forSlugPath:(NSString *)slugPath;
+
+/**
+ *  Use this to use an alternate keypath for a specified slug.  Defaults to returning the slugPath as the keyPath.  Can be used for multiple slugs that have different key paths.
+ *
+ *  @param slugPath the slug path from the endpoint url
+ *  @param slug the slug that will be used to map the slug path
+ *
+ *  @return the keyPath to be used on the slug object that will return a value to be used for the url
+ */
+- (NSString *)keyPathForSlugPath:(NSString *)slugPath
+                        withSlug:(id)slug;
 
 @end
 
@@ -169,69 +203,6 @@
  *  @return a valid type that can be used for mapping.
  */
 - (id<JSONMappableRawType>)transformResponseDataToMappableRawType:(NSData *)responseData;
-
-@end
-
-#pragma mark - Slug Mapping
-
-@interface PLYEndpoint (Slugs)
-/**
- *  Use this to map the slug names to the endpoint.
- *
- *  @return the mappings to use when parsing the slug for the current endpoint
- *
- *  only necessary for classes with keys that don't match the slug
- */
-- (NSArray *)slugClassMappings;
-/**
- *  Use this to specify what quantifies as nil.  For example, if an identifier is an nsinteger at 0, it should be considered nil and not appended to the endpoint
- *
- *  @return the values to associate w/ nil in slug mapping.
- *  
- *  This doesn't factor classes into the mix, only the slug parameter
- */
-- (NSDictionary *)nilSlugMapping;
-@end
-
-#pragma mark - Slug Mapping
-
-@interface PLYSlugMapping : NSObject
-
-/**
- *  The class type associated with the given mapping -- set nil for default -- If nil, this will apply to all objects passed, including dictionaries
- */
-@property (nonatomic) Class classType;
-
-/**
- *  The mapping to use when trying to convert the given slug object to the slug parameters in the endpoint
- */
-@property (nonatomic, strong) NSMutableDictionary *mapping;
-
-/**
- *  Initializer declaring class type
- *
- *  @param classType the type of class associated with the given mapping
- *
- *  @return new instance of slug mapping
- */
-+ (instancetype)slugMappingWithClass:(Class)classType;
-
-/**
- *  Subscripting for new slug maps
- *
- *  @param key the associated slug parameter in the endpoint
- *
- *  @return the keypath used on a slug object of the given classType to insert in the slug parameter of the endpoint
- */
-- (id)objectForKeyedSubscript:(id <NSCopying>)key;
-
-/**
- *  Subscripting for slug maps
- *
- *  @param obj the value of the keypath to be used on the given slug object
- *  @param key the slug parameter to be associated with the given key path
- */
-- (void)setObject:(id)obj forKeyedSubscript:(id <NSCopying>)key;
 
 @end
 
