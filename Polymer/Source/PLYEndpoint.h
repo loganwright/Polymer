@@ -249,14 +249,18 @@
  *  Headers will be appended in the following format
  *  @code // Array Responses
  @{
- @"Header" : @{@"headerKey" : @"headerVal"},
- @"response" : @[] // array response
+    @"Header" : @{
+        @"headerKey" : @"headerVal"
+    },
+    @"response" : @[] // array response
  }
  
  // Dictionary Responses
  @{
- @"Header" : @{@"headerKey" : @"headerVal"},
- // The rest of the response appears here w/ top level keys as normal
+    @"Header" : @{
+        @"headerKey" : @"headerVal"
+    },
+    // The rest of the response appears here w/ top level keys as normal
  }
  */
 @property (nonatomic, readonly) BOOL shouldAppendHeaderToResponse;
