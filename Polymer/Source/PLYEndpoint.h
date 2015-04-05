@@ -164,14 +164,17 @@
  *  The content types that can be accepted
  */
 @property (nonatomic, readonly) NSSet *acceptableContentTypes;
+
 /**
  *  The header fields to be added to the request
  */
 @property (nonatomic, readonly) NSDictionary *headerFields;
+
 /**
  *  A custom request serializer
  */
 @property (nonatomic, readonly) AFHTTPRequestSerializer<AFURLRequestSerialization> *requestSerializer;
+
 /**
  *  A custom response serializer
  */
@@ -190,13 +193,37 @@
  }];
  */
 - (void)getWithCompletion:(void(^)(id object, NSError *error))completion;
+
+/**
+ *  @see getWithCompletion:
+ *
+ *  @param completion the return from the completion.  Override the variable names in the completion block to suit the method to your needs, for example:
+ */
 - (void)putWithCompletion:(void(^)(id object, NSError *error))completion;
+
+/**
+ *  @see getWithCompletion:
+ *
+ *  @param completion the return from the completion.  Override the variable names in the completion block to suit the method to your needs, for example:
+ */
 - (void)postWithCompletion:(void(^)(id object, NSError *error))completion;
+
+/**
+ *  @see getWithCompletion:
+ *
+ *  @param completion the return from the completion.  Override the variable names in the completion block to suit the method to your needs, for example:
+ */
 - (void)patchWithCompletion:(void(^)(id object, NSError *error))completion;
+
+/**
+ *  @see getWithCompletion:
+ *
+ *  @param completion the return from the completion.  Override the variable names in the completion block to suit the method to your needs, for example:
+ */
 - (void)deleteWithCompletion:(void(^)(id object, NSError *error))completion;
 
 /**
- *  Occasionally responses will come in the form of raw NSData as opposed to a JSONMappableRawType.  When this happens, the data is attempted to be converted as JSON, and then it is attempted to be converted into a string.  If a unique type of data is being received from an api for a given endpoint, you should override this method in that endpoint and parse the data into a JSONMappableRawType that can then be mapped to the specified model.
+ *  Occasionally responses will come in the form of raw NSData as opposed to a JSONMappableRawType.  When this happens, the data is attempted to be converted as JSON, and then it is attempted to be converted into a string.  If a unique type of data is being received from an api for a given endpoint (most commonly with XML), one should override this method in that endpoint and parse the data into a JSONMappableRawType that can then be mapped to the specified model.
  *
  *  @param responseData the raw data received from the server
  *

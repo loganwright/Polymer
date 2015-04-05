@@ -8,7 +8,6 @@
 
 #import "PLYEndpoint.h"
 #import "PLYNetworking.h"
-#import <objc/runtime.h>
 
 static BOOL LOG = NO;
 
@@ -17,7 +16,7 @@ static BOOL LOG = NO;
 @interface PLYEndpoint ()
 @property (strong, nonatomic) id slug;
 @property (strong, nonatomic) id<PLYParameterEncodableType> parameters;
-- (NSString *)populatedEndpointUrl;
+@property (nonatomic, readonly) NSString *populatedUrl;
 @end
 
 @implementation PLYEndpoint
@@ -53,11 +52,30 @@ static BOOL LOG = NO;
     if (self) {
         _slug = slug;
         _parameters = parameters;
+        [self assertValidImplementation];
     }
     return self;
 }
 
+/**
+ *  Use this space to run checks early that ensure an endpoint is valid before continuing.
+ */
+- (void)assertValidImplementation {
+    NSAssert([self.returnClass conformsToProtocol:@protocol(JSONMappableObject)],
+             @"ReturnClasses are required to conform to protocol JSONMappableObject : %@",
+             NSStringFromClass(self.returnClass));
+}
+
 #pragma mark - Url Assembly
+
+- (NSString *)populatedUrl {
+    NSString *baseUrl = self.baseUrl;
+    if ([baseUrl hasSuffix:@"/"]) {
+        baseUrl = [baseUrl substringToIndex:baseUrl.length - 1];
+    }
+    NSString *endpointUrl = [self populatedEndpointUrl];
+    return [NSString stringWithFormat:@"%@%@", baseUrl, endpointUrl];
+}
 
 - (NSString *)populatedEndpointUrl {
     NSMutableString *url = [NSMutableString string];
