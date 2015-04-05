@@ -8,7 +8,6 @@
 
 #import "PLYEndpoint.h"
 #import "PLYNetworking.h"
-#import <objc/runtime.h>
 
 static BOOL LOG = NO;
 
@@ -17,7 +16,7 @@ static BOOL LOG = NO;
 @interface PLYEndpoint ()
 @property (strong, nonatomic) id slug;
 @property (strong, nonatomic) id<PLYParameterEncodableType> parameters;
-- (NSString *)populatedEndpointUrl;
+@property (nonatomic, readonly) NSString *populatedUrl;
 @end
 
 @implementation PLYEndpoint
@@ -49,32 +48,47 @@ static BOOL LOG = NO;
 }
 
 - (instancetype)initWithSlug:(id)slug andParameters:(id<PLYParameterEncodableType>)parameters {
-    self = [self init];
+    self = [super init];
     if (self) {
-        self.slug = slug;
-        self.parameters = parameters;
+        _slug = slug;
+        _parameters = parameters;
+        [self assertValidImplementation];
     }
     return self;
 }
 
-#pragma mark - Endpoint Creation
+/**
+ *  Use this space to run checks early that ensure an endpoint is valid before continuing.
+ */
+- (void)assertValidImplementation {
+    NSAssert([self.returnClass conformsToProtocol:@protocol(JSONMappableObject)],
+             @"ReturnClasses are required to conform to protocol JSONMappableObject : %@",
+             NSStringFromClass(self.returnClass));
+}
+
+#pragma mark - Url Assembly
+
+- (NSString *)populatedUrl {
+    NSString *baseUrl = self.baseUrl;
+    if ([baseUrl hasSuffix:@"/"]) {
+        baseUrl = [baseUrl substringToIndex:baseUrl.length - 1];
+    }
+    NSString *endpointUrl = [self populatedEndpointUrl];
+    return [NSString stringWithFormat:@"%@%@", baseUrl, endpointUrl];
+}
 
 - (NSString *)populatedEndpointUrl {
     NSMutableString *url = [NSMutableString string];
-    
     NSArray *urlComponents = [self.endpointUrl componentsSeparatedByString:@"/"];
-    NSDictionary *slugMapping = [self slugMappingForClass:[self.slug class]];
-    NSDictionary *nilSlugMapping = [self nilSlugMapping];
-    
     for (NSString *urlComponent in urlComponents) {
         if ([urlComponent hasPrefix:@":"]) {
-            NSString *strippedComponent = [urlComponent substringFromIndex:1];
-            NSString *slugPath = slugMapping[strippedComponent] ?: strippedComponent;
+            NSString *slugPath = [urlComponent substringFromIndex:1];
             @try {
-                id value = [self.slug valueForKeyPath:slugPath];
-                id nilValue = nilSlugMapping[slugPath];
-                if (value && ![value isEqual:nilValue]) {
-                        [url appendFormat:@"/%@", value];
+                NSString *keyPath = [self keyPathForSlugPath:slugPath
+                                                    withSlug:self.slug];
+                id value = [self.slug valueForKeyPath:keyPath];
+                if ([self valueIsValid:value forSlugPath:slugPath]) {
+                    [url appendFormat:@"/%@", value];
                 } else if (LOG) {
                     NSLog(@"Slug value %@ nil for keypath %@ : %@",
                           value, NSStringFromClass([self.slug class]), slugPath);
@@ -88,25 +102,22 @@ static BOOL LOG = NO;
                 }
             }
         } else if (urlComponent.length > 0) {
-                [url appendFormat:@"/%@", urlComponent];
+            [url appendFormat:@"/%@", urlComponent];
         }
     }
     return url;
 }
 
-- (NSDictionary *)slugMappingForClass:(Class)slugClass {
-    NSDictionary *mapping;
-    NSArray *slugClassMappings = [self slugClassMappings];
-    for (PLYSlugMapping *slugMapping in slugClassMappings) {
-        if ([slugClass isSubclassOfClass:slugMapping.classType]) {
-            mapping = slugMapping.mapping;
-            break;
-        } else if (!slugMapping.classType) {
-            // Not declaring a class type for a mapping is basically setting a default. Continue iteration to find a specific match.
-            mapping = slugMapping.mapping;
-        }
-    }
-    return mapping;
+- (BOOL)valueIsValid:(id)value
+         forSlugPath:(NSString *)slugPath {
+    // Provided here to be overridden if necessary.
+    return (value != nil && ![value isEqual:[NSNull null]]);
+}
+
+- (NSString *)keyPathForSlugPath:(NSString *)slugPath
+                        withSlug:(id)slug {
+    // Provided here to be overridden if necessary.
+    return slugPath;
 }
 
 #pragma mark - URL Component Overrides
@@ -220,51 +231,6 @@ static BOOL LOG = NO;
         }
     }
     return responseObject;
-}
-
-@end
-
-#pragma mark - Slug Mapping
-
-@implementation PLYEndpoint (Slugs)
-
-- (NSArray *)slugClassMappings {
-    return @[];
-}
-
-- (NSDictionary *)nilSlugMapping {
-    return @{};
-}
-
-@end
-
-#pragma mark - Slug Mapping
-
-@implementation PLYSlugMapping
-
-+ (instancetype)slugMappingWithClass:(Class)classType {
-    PLYSlugMapping *new = [PLYSlugMapping new];
-    new.classType = classType;
-    return new;
-}
-
-- (id)objectForKeyedSubscript:(id <NSCopying>)key {
-    return self.mapping[key];
-}
-
-- (void)setObject:(id)obj forKeyedSubscript:(id <NSCopying>)key {
-    if (obj) {
-        self.mapping[key] = obj;
-    } else {
-        [self.mapping removeObjectForKey:key];
-    }
-}
-
-- (NSMutableDictionary *)mapping {
-    if (!_mapping) {
-        _mapping = [NSMutableDictionary dictionary];
-    }
-    return _mapping;
 }
 
 @end

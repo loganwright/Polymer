@@ -16,22 +16,12 @@ static BOOL LOG = NO;
 @interface PLYEndpoint ()
 @property (strong, nonatomic) id slug;
 @property (strong, nonatomic) NSDictionary *parameters;
-- (NSString *)populatedEndpointUrl;
+@property (nonatomic, readonly) NSString *populatedUrl;
 @end
 
 @implementation PLYNetworking
 
 #pragma mark - Configuration
-
-+ (NSString *)completeUrlForEndpoint:(PLYEndpoint *)endpoint {
-    [self assertReturnClassIsMappable:endpoint.returnClass];
-    NSString *baseUrl = [endpoint baseUrl];
-    if ([baseUrl hasSuffix:@"/"]) {
-        baseUrl = [baseUrl substringToIndex:baseUrl.length - 1];
-    }
-    NSString *endpointUrl = [endpoint populatedEndpointUrl];
-    return [NSString stringWithFormat:@"%@%@", baseUrl, endpointUrl];
-}
 
 + (AFHTTPRequestOperationManager *)operationManagerWithEndpoint:(PLYEndpoint *)endpoint {
 
@@ -64,12 +54,10 @@ static BOOL LOG = NO;
 
 + (void)getForEndpoint:(PLYEndpoint *)endpoint
         withCompletion:(void(^)(id object, NSError *error))completion {
-    NSString *completeUrl = [self completeUrlForEndpoint:endpoint];
-    
     AFHTTPRequestOperationManager *manager = [self operationManagerWithEndpoint:endpoint];
     af_networkSuccessBlock success = successBlock(endpoint, completion);
     af_networkFailureBlock failure = failureBlock(endpoint, completion);
-    [manager GET:completeUrl
+    [manager GET:endpoint.populatedUrl
        parameters:endpoint.parameters
           success:success
           failure:failure];
@@ -77,12 +65,10 @@ static BOOL LOG = NO;
 
 + (void)putForEndpoint:(PLYEndpoint *)endpoint
         withCompletion:(void(^)(id object, NSError *error))completion {
-    NSString *completeUrl = [self completeUrlForEndpoint:endpoint];
-    
     AFHTTPRequestOperationManager *manager = [self operationManagerWithEndpoint:endpoint];
     af_networkSuccessBlock success = successBlock(endpoint, completion);
     af_networkFailureBlock failure = failureBlock(endpoint, completion);
-    [manager PUT:completeUrl
+    [manager PUT:endpoint.populatedUrl
       parameters:endpoint.parameters
          success:success
          failure:failure];
@@ -90,12 +76,10 @@ static BOOL LOG = NO;
 
 + (void)postForEndpoint:(PLYEndpoint *)endpoint
          withCompletion:(void(^)(id object, NSError *error))completion {
-    NSString *completeUrl = [self completeUrlForEndpoint:endpoint];
-    
     AFHTTPRequestOperationManager *manager = [self operationManagerWithEndpoint:endpoint];
     af_networkSuccessBlock success = successBlock(endpoint, completion);
     af_networkFailureBlock failure = failureBlock(endpoint, completion);
-    [manager POST:completeUrl
+    [manager POST:endpoint.populatedUrl
        parameters:endpoint.parameters
           success:success
           failure:failure];
@@ -103,12 +87,10 @@ static BOOL LOG = NO;
 
 + (void)patchForEndpoint:(PLYEndpoint *)endpoint
           withCompletion:(void(^)(id object, NSError *error))completion {
-    NSString *completeUrl = [self completeUrlForEndpoint:endpoint];
-    
     AFHTTPRequestOperationManager *manager = [self operationManagerWithEndpoint:endpoint];
     af_networkSuccessBlock success = successBlock(endpoint, completion);
     af_networkFailureBlock failure = failureBlock(endpoint, completion);
-    [manager PATCH:completeUrl
+    [manager PATCH:endpoint.populatedUrl
         parameters:endpoint.parameters
            success:success
            failure:failure];
@@ -116,23 +98,13 @@ static BOOL LOG = NO;
 
 + (void)deleteForEndpoint:(PLYEndpoint *)endpoint
           withCompletion:(void(^)(id object, NSError *error))completion {
-    NSString *completeUrl = [self completeUrlForEndpoint:endpoint];
-    
     AFHTTPRequestOperationManager *manager = [self operationManagerWithEndpoint:endpoint];
     af_networkSuccessBlock success = successBlock(endpoint, completion);
     af_networkFailureBlock failure = failureBlock(endpoint, completion);
-    [manager DELETE:completeUrl
+    [manager DELETE:endpoint.populatedUrl
          parameters:endpoint.parameters
             success:success
             failure:failure];
-}
-
-#pragma mark - Assertion
-
-+ (void)assertReturnClassIsMappable:(Class)returnClass {
-    NSAssert([returnClass conformsToProtocol:@protocol(JSONMappableObject)],
-             @"ReturnClasses are required to conform to protocol JSONMappableObject : %@",
-             NSStringFromClass(returnClass));
 }
 
 #pragma mark - Success | Failure Blocks
