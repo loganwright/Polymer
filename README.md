@@ -33,7 +33,7 @@ The goal of this library is to be as minimalistic as possible while providing ma
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/LoganWright/Polymer#header-fields">Header Fields</a>
 <br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/LoganWright/Polymer#Acceptable-content-types">Acceptable Content Types</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/LoganWright/Polymer#acceptable-content-types">Acceptable Content Types</a>
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/LoganWright/Polymer#individual-endpoints">Individual Endpoint</a>
 <br>
@@ -45,7 +45,7 @@ The goal of this library is to be as minimalistic as possible while providing ma
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/LoganWright/Polymer#response-key-path">Response Key Path</a>
 <br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/LoganWright/Polymer#Serializers">Serializers</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/LoganWright/Polymer#serializers">Serializers</a>
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/LoganWright/Polymer#response-serializer">Response Serializer</a>
 <br>
@@ -55,6 +55,17 @@ The goal of this library is to be as minimalistic as possible while providing ma
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/LoganWright/Polymer#transform-response">Transform Response</a>
 <br>
+<a href="https://github.com/LoganWright/Polymer#networking">Networking - Examples</a>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/LoganWright/Polymer#get">GET</a>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/LoganWright/Polymer#post">POST</a>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/LoganWright/Polymer#put">PUT</a>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/LoganWright/Polymer#patch">PATCH</a>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/LoganWright/Polymer#get">DELETE</a>
 
 ---
 
@@ -626,6 +637,26 @@ In some situations, we want to pass a variety of objects to an endpoint and defi
 ```
 
 By overriding as demonstrated above, we can pass our endpoint a `Dictionary`, a `Post` object, or a `Comment` object and when we fetch from our Posts endpoint, we'll interact with the appropriate endpoint.
+a
+
+######Slug Mapping Nil Check
+
+By default, a value is checked if it is `nil` or `NSNull`.  If either of these is true, the path is not mapped.  In rare cases, you may need to specify what constitutes as `nil`.  For example, sometimes when using an NSInteger, it is 0 but needs to be nil.
+
+```ObjC
+@implementation PostsEndpoint
+/*
+...
+*/
+- (BOOL)valueIsValid:(id)value forSlugPath:(NSString *)slugPath {
+  if ([slugPath isEqualToString:@"identifier"]) {
+    return [value intValue] > 0;
+  } else {
+    return YES;
+  }
+}
+@end
+```
 
 #####Response Key Path
 
@@ -751,6 +782,83 @@ override func transformResponseToMappableRawType(response: AnyObject) -> JSONMap
     return response as? JSONMappableRawType
   }
 }
+```
+
+####Networking Examples
+
+Once you've modeled your endpoint, the majority of the work is done!  You simply intialize your endpoint with a slug and parameters as necessary and you're on your way!
+
+#####Get
+
+######Get specific post
+
+```ObjC
+PostsEndpoint *ep = [PostsEndpoint endpointWithSlug:@{@"identifier" : @"3"}];
+[ep getWithCompletion:^(Post *post, NSError *error){
+  // ...
+}];
+```
+
+######Get a user's posts
+
+```ObjC
+PostsEndpoint *ep = [PostsEndpoint endpointWithParameters:@{@"user_id" : currentUser.identifier}];
+[ep getWithCompletion:^(NSArray *posts, NSError *error){
+  // ... array of Post objects
+}];
+```
+
+#####Post
+
+```ObjC
+NSDictionary *newPost = @{
+  @"title" : @"New Post",
+  @"body" : @"This is a cool new post"
+};
+PostsEndpoint *ep = [PostsEndpoint endpointWithParameters:newPost];
+[ep postWithCompletion:^(Post *post, NSError *error){
+  // ... created new post, or error
+}];
+```
+
+#####Put
+
+```ObjC
+NSArray *tags = [
+  @"red",
+  @"fun",
+  @"summer"
+]
+
+PostTagEndpoint *ep = [PostTagEndpoint endpointWithSlug:post
+                                          andParameters:tags];
+[ep putWithCompletion:^(NSArray *tags, NSError *error){
+  // ... created or updated tags for post.
+}];
+```
+
+#####Patch
+
+```ObjC
+NSDictionary *updatedParams = @{
+  @"title" : @"New Title",
+  @"body" : @"Updated body"
+};
+
+PostsEndpoint *ep = [PostsEndpoint endpointWithSlug:post
+                                      andParameters:updatedParams];
+[ep patchWithCompletion:^(Post *post, NSError *error){
+  // ... created new post, or error
+}];
+```
+
+#####Delete
+
+```ObjC
+PostEndpoint *ep = [PostEndpoint endpointWithSlug:post];
+[ep deleteWithCompletion:^(Post *deletedPost, NSError *error) {
+    // .. deleted object or error
+}]
 ```
 
 ####Mapping
