@@ -57,7 +57,7 @@ static BOOL LOG = NO;
     return self;
 }
 
-/**
+/*!
  *  Use this space to run checks early that ensure an endpoint is valid before continuing.
  */
 - (void)assertValidImplementation {
@@ -201,7 +201,7 @@ static BOOL LOG = NO;
 
 #pragma mark - Response Data Transformer
 
-/**
+/*!
  *  When data is received from a request that hasn't been converted to a dictionary, string, or array, we use this to try and convert the data to one of these mappable types.  The most common form of this is when receiving raw xml data.  This raw xml data would need to be converted to a JSONMappableRawType (dictionary, string, or array).  Override this in your endpoint subclass to convert appropriately.
  *
  *  @param responseData the data received from the request
