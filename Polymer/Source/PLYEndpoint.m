@@ -8,10 +8,9 @@
 
 #import "PLYEndpoint.h"
 #import "PLYNetworking.h"
+#import <JSONMapping/JSONMapping.h>
 
 static BOOL LOG = NO;
-
-@protocol JSONMappableObject;
 
 @interface PLYEndpoint ()
 @property (strong, nonatomic) id slug;
@@ -84,9 +83,8 @@ static BOOL LOG = NO;
         if ([urlComponent hasPrefix:@":"]) {
             NSString *slugPath = [urlComponent substringFromIndex:1];
             @try {
-                NSString *keyPath = [self keyPathForSlugPath:slugPath
-                                                    withSlug:self.slug];
-                id value = [self.slug valueForKeyPath:keyPath];
+                id value = [self valueForSlugPath:slugPath
+                                         withSlug:self.slug];
                 if ([self valueIsValid:value forSlugPath:slugPath]) {
                     [url appendFormat:@"/%@", value];
                 } else if (LOG) {
@@ -114,10 +112,9 @@ static BOOL LOG = NO;
     return (value != nil && ![value isEqual:[NSNull null]]);
 }
 
-- (NSString *)keyPathForSlugPath:(NSString *)slugPath
-                        withSlug:(id)slug {
-    // Provided here to be overridden if necessary.
-    return slugPath;
+- (id)valueForSlugPath:(NSString *)slugPath withSlug:(id)slug {
+    // Default implementation, can be overridden.
+    return [slug valueForKeyPath:slugPath];
 }
 
 #pragma mark - URL Component Overrides
@@ -150,13 +147,7 @@ static BOOL LOG = NO;
                                  userInfo:nil];
 }
 
-@end
-
-#pragma mark - Networking
-
-@implementation PLYEndpoint (Networking)
-
-#pragma mark - Configuring
+#pragma mark - Networking Configuration
 
 /*
  These are intended to be overridden by an endpoint if it has values that need to be added
@@ -177,7 +168,7 @@ static BOOL LOG = NO;
     return nil;
 }
 
-#pragma mark - Implementation
+#pragma mark - HTTP Calls
 
 - (void)getWithCompletion:(void(^)(id object, NSError *error))completion {
     [PLYNetworking getForEndpoint:self withCompletion:completion];
@@ -233,11 +224,7 @@ static BOOL LOG = NO;
     return responseObject;
 }
 
-@end
-
 #pragma mark - Header Mapping
-
-@implementation PLYEndpoint (HeaderMapping)
 
 - (BOOL)shouldAppendHeaderToResponse {
     return NO;

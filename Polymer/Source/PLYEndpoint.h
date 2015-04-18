@@ -21,6 +21,18 @@
 @interface NSArray () <PLYParameterEncodableType>
 @end
 
+/*!
+ *  We're using this to specify our return type should be NSArray, NSDictionary, or NSString, explicitly.
+ */
+@protocol JSONMappableRawType <NSObject>
+@end
+@interface NSArray () <JSONMappableRawType>
+@end
+@interface NSDictionary () <JSONMappableRawType>
+@end
+@interface NSString () <JSONMappableRawType>
+@end
+
 @interface PLYEndpoint : NSObject
 
 #pragma mark - Config
@@ -58,36 +70,36 @@
 + (instancetype)endpoint;
 
 /*!
- *  Initializes the endpoint with the given slug to populate
+ *  Initializes the endpoint with the given slug that should be used to populate the endpoint
  *
- *  @param slug an object or a dictionary w/ values that directly correspond to the declared slugs within the endpoint
+ *  @param slug an object or a dictionary w/ values that directly correspond to the declared slugpaths within the endpoint
  *
  *  @return a fully initialized endpoint
  */
 + (instancetype)endpointWithSlug:(id)slug;
 
 /*!
- *  Initializes the endpoint with the given slug to populate
+ *  Initializes the endpoint with the given slug that should be used to populate the endpoint
  *
- *  @param slug an object or a dictionary w/ values that directly correspond to the declared slugs within the endpoint
+ *  @param slug an object or a dictionary w/ values that directly correspond to the declared slugpaths within the endpoint
  *
  *  @return a fully initialized endpoint
  */
 - (instancetype)initWithSlug:(id)slug;
 
 /*!
- *  Initializes the endpoint with the given query parameters to populate
+ *  Initializes the endpoint with the given query parameters to populate the request
  *
- *  @param parameters a dictionary of the parameters to send with the request
+ *  @param parameters a PLYParameterEncodableType containing the parameters to send with the request
  *
  *  @return a fully initialized endpoint
  */
 + (instancetype)endpointWithParameters:(id<PLYParameterEncodableType>)parameters;
 
 /*!
- *  Initializes the endpoint with the given query parameters to populate
+ *  Initializes the endpoint with the given query parameters to populate the request
  *
- *  @param parameters a dictionary of the parameters to send with the request
+ *  @param parameters a PLYParameterEncodableType containing the parameters to send with the request
  *
  *  @return a fully initialized endpoint
  */
@@ -96,8 +108,8 @@
 /*!
  *  Initializes the endpoint with the given slug and query parameters
  *
- *  @param slug            an object or a dictionary w/ values that directly correspond to the declared slugs within the endpoint
- *  @param parameters additional parameters to append to the request
+ *  @param slug an object or a dictionary w/ values that directly correspond to the declared slugpaths within the endpoint
+ *  @param parameters a PLYParameterEncodableType containing the parameters to send with the request
  *
  *  @return a fully initialized endpoint
  */
@@ -107,8 +119,8 @@
 /*!
  *  Initializes the endpoint with the given slug and query parameters
  *
- *  @param slug an object or a dictionary w/ values that directly correspond to the declared slugs within the endpoint
- *  @param parameters additional parameters to append to the request
+ *  @param slug an object or a dictionary w/ values that directly correspond to the declared slugpaths within the endpoint
+ *  @param parameters a PLYParameterEncodableType containing the parameters to send with the request
  *
  *  @return a fully initialized endpoint
  */
@@ -123,42 +135,23 @@
  *  @param value    the value that will be injected into the url
  *  @param slugPath the path that will be replaced
  *
- *  @return whether or not to inject this value into the url at the given slug path
+ *  @return whether or not to inject this value into the url at the given slug path, if NO, the path is not appended
  */
 - (BOOL)valueIsValid:(id)value
          forSlugPath:(NSString *)slugPath;
 
 /*!
- *  Use this to use an alternate keypath for a specified slug.  Defaults to returning the slugPath as the keyPath.  Can be used for multiple slugs that have different key paths.
+ *  When populating the endpoint with a given slug, by default, the endpoint will call: `[slug valueForKeyPath:slugPath];`.  You can use this to override that behavior and provide custom functionality that allows for multiple slug types to be used.
  *
- *  @param slugPath the slug path from the endpoint url
- *  @param slug the slug that will be used to map the slug path
+ *  @param slugPath the slug path that is being populated
+ *  @param slug     the slug that is being used to populate the endpoint's slug paths
  *
- *  @return the keyPath to be used on the slug object that will return a value to be used for the url
+ *  @return the value to insert into the url, or nil if the slugpath should be removed from the url
  */
-- (NSString *)keyPathForSlugPath:(NSString *)slugPath
-                        withSlug:(id)slug;
-
-@end
+- (id)valueForSlugPath:(NSString *)slugPath
+              withSlug:(id)slug;
 
 #pragma mark - Networking
-
-/*!
- *  We're using this to specify our return type should be NSArray, NSDictionary, or NSString, explicitly.
- */
-@protocol JSONMappableRawType <NSObject>
-@end
-@interface NSArray () <JSONMappableRawType>
-@end
-@interface NSDictionary () <JSONMappableRawType>
-@end
-@interface NSString () <JSONMappableRawType>
-@end
-
-/*!
- *  For interfacing with networking
- */
-@interface PLYEndpoint (Networking)
 
 /*!
  *  The content types that can be accepted
@@ -231,11 +224,7 @@
  */
 - (id<JSONMappableRawType>)transformResponseDataToMappableRawType:(NSData *)responseData;
 
-@end
-
 #pragma mark - Header Mapping
-
-@interface PLYEndpoint (HeaderMapping)
 
 /*!
  *  In some cases, a header includes values that need to be appended to the model.  For these situations, the header can be appended to the JSON mapping dictionary.  If the response is a dictionary, an additional field will be added called 'Header', and values can be accessed via keypath syntax, ie: Header.etag.
