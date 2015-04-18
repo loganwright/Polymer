@@ -192,34 +192,31 @@ static BOOL LOG = NO;
 
 #pragma mark - Response Data Transformer
 
-/*!
- *  When data is received from a request that hasn't been converted to a dictionary, string, or array, we use this to try and convert the data to one of these mappable types.  The most common form of this is when receiving raw xml data.  This raw xml data would need to be converted to a JSONMappableRawType (dictionary, string, or array).  Override this in your endpoint subclass to convert appropriately.
- *
- *  @param responseData the data received from the request
- *
- *  @return a type that can be used to map to the return class.
- */
-- (id<JSONMappableRawType>)transformResponseDataToMappableRawType:(NSData *)responseData {
-    
+- (id<JSONMappableRawType>)transformResponseToMappableRawType:(id)response {
     if (LOG) {
-        NSLog(@"Transforming responseData for endpoint : %@", [self class]);
+        NSLog(@"Transforming response: %@ for endpoint : %@", response, [self class]);
     }
     
-    /*
-     This is the default transformer that attempts to handle when data is received from a url.  Override this for custom behavior.
-     */
     id<JSONMappableRawType> responseObject;
-    NSError *err;
-    id jsonResponse = [NSJSONSerialization JSONObjectWithData:responseData
-                                                      options:NSJSONReadingAllowFragments
-                                                        error:&err];
-    if (jsonResponse && !err) {
-        responseObject = jsonResponse;
-    } else {
-        NSString *string = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
-        if (string) {
-            responseObject = string;
+    if ([response isKindOfClass:[NSData class]]) {
+        NSData *responseData = response;
+        /*
+         This is the default transformer that attempts to handle when data is received from a url.  Override this for custom behavior.
+         */
+        NSError *err;
+        id jsonResponse = [NSJSONSerialization JSONObjectWithData:responseData
+                                                          options:NSJSONReadingAllowFragments
+                                                            error:&err];
+        if (jsonResponse && !err) {
+            responseObject = jsonResponse;
+        } else {
+            NSString *string = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
+            if (string) {
+                responseObject = string;
+            }
         }
+    } else {
+        return responseObject = response;
     }
     return responseObject;
 }

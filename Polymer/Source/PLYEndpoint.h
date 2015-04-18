@@ -216,13 +216,13 @@
 - (void)deleteWithCompletion:(void(^)(id object, NSError *error))completion;
 
 /*!
- *  Occasionally responses will come in the form of raw NSData as opposed to a JSONMappableRawType.  When this happens, the data is attempted to be converted as JSON, and then it is attempted to be converted into a string.  If a unique type of data is being received from an api for a given endpoint (most commonly with XML), one should override this method in that endpoint and parse the data into a JSONMappableRawType that can then be mapped to the specified model.
+ *  When a response is received from an api, you can use this method to provide customized behavior.  A common use ase for this is when using an XML api that can not be automatically converted to a dictionary.  You can use this to transform the data to a mappable type.  You can also implement customized functionality as necessary for specialized circumstances.
  *
- *  @param responseData the raw data received from the server
+ *  @param response the response to map
  *
- *  @return a valid type that can be used for mapping.
+ *  @return the value received from the response
  */
-- (id<JSONMappableRawType>)transformResponseDataToMappableRawType:(NSData *)responseData;
+- (id<JSONMappableRawType>)transformResponseToMappableRawType:(id)response;
 
 #pragma mark - Header Mapping
 

@@ -52,6 +52,9 @@ The goal of this library is to be as minimalistic as possible while providing ma
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/LoganWright/Polymer#request-serializer">Request Serializer</a>
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/LoganWright/Polymer#append-header">Append Header</a>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/LoganWright/Polymer#transform-response">Transform Response</a>
+<br>
 
 ---
 
@@ -628,12 +631,12 @@ By overriding as demonstrated above, we can pass our endpoint a `Dictionary`, a 
 
 If you wish to use a portion of the response located at a specified keypath, you can declare it here.  This is only necessary for specific situations.  For example, if our response looked like this:
 
-```JSON
-{
+```
+[
   "results" : [
     // ... results
   ]
-}
+]
 ```
 
 We could specify to map only the array located at `results` by declaring like so:
@@ -717,6 +720,36 @@ If the response is an array, it will be appended to the key `"response"` for map
 ```Swift
 override var shouldAppendHeaderToResponse: Bool {
   return true
+}
+```
+
+####Transform Response
+
+For some apis, the data we receive isn't able to be parsed a valid json representation for mapping.  This is most common with XML webservices.  In those situations, you can override `transformResponseDataToMappableRawType:`.  This can also be overridden for customize behavior of specialized circumstances.
+
+######ObjC
+
+```ObjC
+- (id<JSONMappableRawType>)transformResponseToMappableRawType:(id)response {
+  if ([response isKindOfClass:[NSData class]]) {
+        NSData *responseData = response;
+        NSDictionary *responseDictionary = ... convert response data;
+        return responseDictionary;
+  } else {
+    return response;
+  }
+}
+```
+
+######Swit
+
+```Swift
+override func transformResponseToMappableRawType(response: AnyObject) -> JSONMappableRawType? {
+  if let data = response as? NSData {
+    return ... converted data
+  } else {
+    return response as? JSONMappableRawType
+  }
 }
 ```
 

@@ -119,13 +119,7 @@ af_networkSuccessBlock successBlock(PLYEndpoint *endpoint, dv_responseBlock comp
      */
     return ^(AFHTTPRequestOperation *operation, id responseObject) {
 
-        if ([responseObject isKindOfClass:[NSData class]]) {
-            if (LOG) {
-                NSLog(@"Transforming raw data for endpoint: %@",
-                      NSStringFromClass([endpoint class]));
-            }
-            responseObject = [endpoint transformResponseDataToMappableRawType:responseObject];
-        }
+        responseObject = [endpoint transformResponseToMappableRawType:responseObject];
         
         if (endpoint.responseKeyPath && [responseObject isKindOfClass:[NSDictionary class]]) {
             if (LOG) {
