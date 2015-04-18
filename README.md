@@ -1,3 +1,15 @@
+#Polymer
+
+<a href="http://loganwright.github.io/Polymer/#">Documentation</a>
+<br>
+<a href="https://github.com/LoganWright/Polymer#getting-started#">Getting Started</a>
+<br>
+<a href="https://github.com/LoganWright/Polymer#models#">Building Models</a>
+<br>
+<a href="https://github.com/LoganWright/Polymer#endpoints#">Endpoints</a>
+<br>
+<a href="https://github.com/LoganWright/Polymer#use#">Use</a>
+
 #Getting Started
 
 The best way to describe Polymer is to show how it is used.  Let's query some artists from the spotify web api.  Here's an example response from <a href="https://api.spotify.com/v1/search?q=tania+bowra&type=artist">this</a> endpoint.
