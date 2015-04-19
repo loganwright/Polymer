@@ -15,15 +15,18 @@ Polymer relies on <a href="https://github.com/AFNetworking/AFNetworking">AFNetwo
 ---
 
 <!-- [![CI Status](http://img.shields.io/travis/hunk/SlideMenu3D.svg?style=flat)](https://travis-ci.org/hunk/SlideMenu3D) -->
-[![Version](https://img.shields.io/cocoapods/v/Polymer.svg?style=flat)](http://cocoapods.org/pods/Polymer)
-[![License](https://img.shields.io/cocoapods/l/Polymer.svg?style=flat)](http://cocoapods.org/pods/Polymer)
-[![Platform](https://img.shields.io/cocoapods/p/Polymer.svg?style=flat)](http://cocoapods.org/pods/Polymer)
+[![Version](https://img.shields.io/cocoapods/v/Polymer.svg?style=flat-square)](http://cocoapods.org/pods/Polymer)
+[![License](https://img.shields.io/cocoapods/l/Polymer.svg?style=flat-square)](http://cocoapods.org/pods/Polymer)
+[![Platform](https://img.shields.io/cocoapods/p/Polymer.svg?style=flat-square)](http://cocoapods.org/pods/Polymer)
+![Platform](https://img.shields.io/badge/language-Swift%20%7C%20ObjC-green.svg?style=flat-square)
 
 ---
 
 <a href="http://loganwright.github.io/Polymer/#">Documentation</a>
 <br>
 <a href="https://github.com/LoganWright/Polymer#initial-setup">Initial Setup</a>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/LoganWright/Polymer#example-project">Example Project</a>
 <br>
 <a href="https://github.com/LoganWright/Polymer#getting-started">Getting Started Guide -- Spotify Search</a>
 <br>
@@ -85,6 +88,12 @@ It is highly recommended that you install Polymer through <a href="cocoapods.org
 
 Podfile: `pod 'Polymer'`
 <br>Import: `#import <Polymer/PLYEndpoint.h>`
+
+###Example Project
+
+Use `Polymer.xcworkspace` only. The `.xcproj` file will fail.
+
+You will need to have cocoapods installed and run `pod install` from the command line in the Polymer directory.
 
 #Getting Started
 
@@ -168,13 +177,13 @@ For our example, the only thing we really care about is the artist objects locat
 }
 ```
 
-Let's how it would look modeled as an ObjC object.
+Let's how it would look modeled as an ObjC object. (See Swift examples below).
 
 ####Spotify Models
 
 #####SpotifyArtist Model
 
-The first thing we need to do is create our object and make sure it conforms to `GenomeMappableObject` protocol.  Here's how our object looks now.
+The first thing we need to do is create our object and make sure it conforms to `GenomeObject` protocol.  Here's how our object looks now.
 
 `SpotifyArtist.h`
 
@@ -182,7 +191,7 @@ The first thing we need to do is create our object and make sure it conforms to 
 #import <Foundation/Foundation.h>
 #import <Genome/Genome.h>
 
-@interface SpotifyArtist : NSObject <GenomeMappableObject>
+@interface SpotifyArtist : NSObject <GenomeObject>
 @end
 ```
 
@@ -456,6 +465,25 @@ PLYEndpoint *ep = [SpotifySearchEndpoint endpointWithParameters:@{@"q" : @"beyon
 }];
 ```
 
+In Swift however, you'll be required to cast within the function:
+
+```Swift
+let ep = SpotifySearchEndpoint(parameters:[
+  "q" : "beyonce",
+  "type" : "artist"
+  ]
+)
+ep.getWithCompletion { response, error in
+  if let artists = response as? [SpotifyArtist] {
+    println("found artists: \(artists)")
+  } else if let err = error {
+    println("got error: \(error)")
+  } else {
+    println("Unknown response: \(response)")
+  }
+}
+```
+
 This can also be done to individual model objects, not just `NSArray`s.  The headers are heavily documented for more information!
 
 ###Endpoints
@@ -525,9 +553,6 @@ You can use this to specify the content types to be accepted from a webservice. 
 ```ObjC
 - (NSSet *)acceptableContentTypes {
   return [NSSet setWithObjects:@"application/json", @"text/html", nil];
-}
-override var acceptableContentTypes: Set<NSObject> {
-    return Set(["application/json", "text/html"])
 }
 ```
 
