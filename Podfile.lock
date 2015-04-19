@@ -23,8 +23,8 @@ PODS:
   - Genome (0.1)
 
 DEPENDENCIES:
-  - AFNetworking
-  - Genome
+  - AFNetworking (~> 2.5)
+  - Genome (= 0.1)
 
 SPEC CHECKSUMS:
   AFNetworking: fefbce9660acb17f48ae0011292d4da0f457bf36

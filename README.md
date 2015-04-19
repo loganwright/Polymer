@@ -4,6 +4,14 @@ Polymer is an endpoint focused networking library for Objective-C and Swift that
 
 The goal of this library is to be as minimalistic as possible while providing maximum customization.  This is achieved by making transparent methods that can be easily overridden when necessary to handle edge cases and customize the behavior of an endpoint.
 
+###Genome
+
+Polymer features the mapping library <a href="https://github.com/LoganWright/genome">Genome</a>
+
+###AFNetworking
+
+Polymer relies on <a href="https://github.com/AFNetworking/AFNetworking">AFNetworking</a> for its network operations
+
 ---
 
 <!-- [![CI Status](http://img.shields.io/travis/hunk/SlideMenu3D.svg?style=flat)](https://travis-ci.org/hunk/SlideMenu3D) -->
@@ -71,7 +79,7 @@ The goal of this library is to be as minimalistic as possible while providing ma
 
 #Initial Setup
 
-If you wish to install the library manually, you'll need to also include <a href="https://github.com/AFNetworking/AFNetworking">AFNetworking</a> and <a href="https://github.com/LoganWright/JSONMapping">JSONMapping</a>
+If you wish to install the library manually, you'll need to also include <a href="https://github.com/AFNetworking/AFNetworking">AFNetworking</a> and <a href="https://github.com/LoganWright/Genome">Genome</a>
 
 It is highly recommended that you install Polymer through <a href="cocoapods.org">cocoapods.</a>  Here is a personal cocoapods reference just in case it may be of use: <a href="https://gist.github.com/LoganWright/5aa9b3deb71e9de628ba">Cocoapods Setup Guide</a>
 
@@ -166,15 +174,15 @@ Let's how it would look modeled as an ObjC object.
 
 #####SpotifyArtist Model
 
-The first thing we need to do is create our object and make sure it conforms to `JSONMappableObject` protocol.  Here's how our object looks now.
+The first thing we need to do is create our object and make sure it conforms to `GenomeMappableObject` protocol.  Here's how our object looks now.
 
 `SpotifyArtist.h`
 
 ```ObjC
 #import <Foundation/Foundation.h>
-#import <JSONMapping/JSONMapping.h>
+#import <Genome/Genome.h>
 
-@interface SpotifyArtist : NSObject <JSONMappableObject>
+@interface SpotifyArtist : NSObject <GenomeMappableObject>
 @end
 ```
 
@@ -184,9 +192,9 @@ Now let's fill in the properties that map to the JSON.  Our final model header w
 
 ```ObjC
 #import <Foundation/Foundation.h>
-#import <JSONMapping/JSONMapping.h>
+#import <Genome/Genome.h>
 
-@interface SpotifyArtist : NSObject <JSONMappableObject>
+@interface SpotifyArtist : NSObject <GenomeMappableObject>
 @property (strong, nonatomic) NSURL *externalSpotifyUrl;
 @property (nonatomic) NSInteger numberOfFollowers;
 @property (strong, nonatomic) NSArray *genres;
@@ -200,19 +208,19 @@ Now let's fill in the properties that map to the JSON.  Our final model header w
 @end
 ```
 
-`JSONMappableObject` protocol requires implementing an instance method that is called `mapping` and returns an `NSMutableDictionary`.  This will be used under the hood when converting the JSON response to model objects. Modelling supports the following syntax:
+`GenomeMappableObject` protocol requires implementing an instance method that is called `mapping` and returns an `NSMutableDictionary`.  This will be used under the hood when converting the JSON response to model objects. Modelling supports the following syntax:
 
 ```ObjC
 mapping[@"<#propertyName#>"] = @"<#associatedJsonKeyPath#>";
 ```
 
-This operation tries to be smart and if you have a property that is a class that also corresponds to a `JSONMappableObject`, it will be mapped automatically.  If your property is an array of `JSONMappableObject`s, the type needs to be declared explicitly since this can't be discovered through introspection.  To do this, you use the following syntax:
+This operation tries to be smart and if you have a property that is a class that also corresponds to a `GenomeObject`, it will be mapped automatically.  If your property is an array of `GenomeObject`s, the type needs to be declared explicitly since this can't be discovered through introspection.  To do this, you use the following syntax:
 
 ```ObjC
 mapping[@"<#arrayPropertyName#>@<#ClassName#>"] = @"<#associatedJsonKeyPath#>";
 ```  
 
-The `@` syntax is an important feature of JSONMapping and it will be included quite often.  If you would like to be a bit more type safe, you can use this convenience function to declare your keys:
+The `@` syntax is an important feature of Genome and it will be included quite often.  If you would like to be a bit more type safe, you can use this convenience function to declare your keys:
 
 ```ObjC
 propertyMap(@"<#propertyName#>", [<#classType#> class])
@@ -220,7 +228,7 @@ propertyMap(@"<#propertyName#>", [<#classType#> class])
 
 This is a bit safer way to map so that if you refactor your class names, you don't need to do a project search to replace your key mappings.
 
-This syntax can also be used to declare a `JSONMappableTransformer` to go along with the class.  More on that later.  Let's look at our mapping for `SpotifyArtist`
+This syntax can also be used to declare a `GenomeTransformer` to go along with the class.  More on that later.  Let's look at our mapping for `SpotifyArtist`
 
 `SpotifyArtist.m`
 
@@ -273,16 +281,16 @@ Let's create a model for the individual objects that looks like this:
 
 ```ObjC
 #import <Foundation/Foundation.h>
-#import <JSONMapping/JSONMapping.h>
+#import <Genome/Genome.h>
 
-@interface SpotifyImageRef : NSObject <JSONMappableObject>
+@interface SpotifyImageRef : NSObject <GenomeObject>
 @property (nonatomic) NSInteger height;
 @property (nonatomic) NSInteger width;
 @property (copy, nonatomic) NSURL *url;
 @end
 ```
 
-Note: You can declare `JSONMappableObject` protocol in the implementation file if you prefer.  This is more clear for examples.
+Note: You can declare `GenomeObject` protocol in the implementation file if you prefer.  This is more clear for examples.
 
 `SpotifyImageRef.m`
 
@@ -539,7 +547,7 @@ Once your base endpoint is defined, your individual endpoints should subclass th
 
 Use this to define what model the response for this endpoint should be mapped to.  If this endpoint is an array response, the endpoint will return an array of this class.  
 
-> NOTE: This class must conform to JSONMappableObject protocol
+> NOTE: This class must conform to GenomeObject protocol
 
 ######ObjC
 
@@ -761,7 +769,7 @@ For some apis, the data we receive isn't able to be parsed a valid json represen
 ######ObjC
 
 ```ObjC
-- (id<JSONMappableRawType>)transformResponseToMappableRawType:(id)response {
+- (id<GenomeMappableRawType>)transformResponseToMappableRawType:(id)response {
   if ([response isKindOfClass:[NSData class]]) {
         NSData *responseData = response;
         NSDictionary *responseDictionary = ... convert response data;
@@ -775,11 +783,11 @@ For some apis, the data we receive isn't able to be parsed a valid json represen
 ######Swit
 
 ```Swift
-override func transformResponseToMappableRawType(response: AnyObject) -> JSONMappableRawType? {
+override func transformResponseToMappableRawType(response: AnyObject) -> GenomeMappableRawType? {
   if let data = response as? NSData {
     return ... converted data
   } else {
-    return response as? JSONMappableRawType
+    return response as? GenomeMappableRawType
   }
 }
 ```
@@ -863,4 +871,4 @@ PostEndpoint *ep = [PostEndpoint endpointWithSlug:post];
 
 ####Mapping
 
-See JSONMapping
+For more information, see <a href="https://github.com/loganwright/genome">Genome</a>
