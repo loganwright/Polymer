@@ -7,9 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <JSONMapping/JSONMapping.h>
+#import <Genome/Genome.h>
 
-@interface SpotifyArtist : NSObject <JSONMappableObject>
+@interface SpotifyArtist : NSObject <GenomeObject>
 @property (strong, nonatomic) NSURL *externalSpotifyUrl;
 @property (nonatomic) NSInteger numberOfFollowers;
 @property (strong, nonatomic) NSArray *genres;
