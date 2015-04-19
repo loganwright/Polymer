@@ -20,14 +20,14 @@ PODS:
   - AFNetworking/UIKit (2.5.2):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
-  - JSONMapping (0.1.6)
+  - Genome (0.1)
 
 DEPENDENCIES:
   - AFNetworking
-  - JSONMapping
+  - Genome
 
 SPEC CHECKSUMS:
   AFNetworking: fefbce9660acb17f48ae0011292d4da0f457bf36
-  JSONMapping: 240487f1c41613b00d15d81515714d94984e0d22
+  Genome: 7aa8b47f7275df8d6e65afe1f35799a7177675f9
 
 COCOAPODS: 0.36.3

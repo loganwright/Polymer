@@ -24,13 +24,13 @@
 /*!
  *  We're using this to specify our return type should be NSArray, NSDictionary, or NSString, explicitly.
  */
-@protocol JSONMappableRawType <NSObject>
+@protocol GenomeMappableRawType <NSObject>
 @end
-@interface NSArray () <JSONMappableRawType>
+@interface NSArray () <GenomeMappableRawType>
 @end
-@interface NSDictionary () <JSONMappableRawType>
+@interface NSDictionary () <GenomeMappableRawType>
 @end
-@interface NSString () <JSONMappableRawType>
+@interface NSString () <GenomeMappableRawType>
 @end
 
 @interface PLYEndpoint : NSObject
@@ -222,7 +222,7 @@
  *
  *  @return the value received from the response
  */
-- (id<JSONMappableRawType>)transformResponseToMappableRawType:(id)response;
+- (id<GenomeMappableRawType>)transformResponseToMappableRawType:(id)response;
 
 #pragma mark - Header Mapping
 

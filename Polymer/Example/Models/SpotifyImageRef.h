@@ -7,9 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <JSONMapping/JSONMapping.h>
+#import <Genome/Genome.h>
 
-@interface SpotifyImageRef : NSObject <JSONMappableObject>
+@interface SpotifyImageRef : NSObject <GenomeObject>
 @property (nonatomic) NSInteger height;
 @property (nonatomic) NSInteger width;
 @property (copy, nonatomic) NSURL *url;

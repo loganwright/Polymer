@@ -8,7 +8,7 @@
 
 #import "PLYEndpoint.h"
 #import "PLYNetworking.h"
-#import <JSONMapping/JSONMapping.h>
+#import <Genome/Genome.h>
 
 static BOOL LOG = NO;
 
@@ -60,7 +60,7 @@ static BOOL LOG = NO;
  *  Use this space to run checks early that ensure an endpoint is valid before continuing.
  */
 - (void)assertValidImplementation {
-    NSAssert([self.returnClass conformsToProtocol:@protocol(JSONMappableObject)],
+    NSAssert([self.returnClass conformsToProtocol:@protocol(GenomeObject)],
              @"ReturnClasses are required to conform to protocol JSONMappableObject : %@",
              NSStringFromClass(self.returnClass));
 }
@@ -192,12 +192,12 @@ static BOOL LOG = NO;
 
 #pragma mark - Response Data Transformer
 
-- (id<JSONMappableRawType>)transformResponseToMappableRawType:(id)response {
+- (id<GenomeMappableRawType>)transformResponseToMappableRawType:(id)response {
     if (LOG) {
         NSLog(@"Transforming response: %@ for endpoint : %@", response, [self class]);
     }
     
-    id<JSONMappableRawType> responseObject;
+    id<GenomeMappableRawType> responseObject;
     if ([response isKindOfClass:[NSData class]]) {
         NSData *responseData = response;
         /*
