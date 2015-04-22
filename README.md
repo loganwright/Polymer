@@ -1,6 +1,6 @@
 #Polymer
 
-Polymer is an endpoint focused networking library for Objective-C and Swift that is meant to make interaction with REST webservices simple, fast, and fun!  By treating the endpoints of a webservice as objects, it makes interaction more straightforward and readable while still leveraging and simplifying some of the amazing mapping technologies we've grown used to in consuming apis.
+Polymer is an endpoint focused networking library for Objective-C and Swift that is meant to make interaction with REST webservices simple, fast, and fun!  By treating the endpoints of a webservice as objects, it makes interaction more straightforward and readable while still leveraging and simplifying some of the amazing mapping technologies we've grown used to in consuming APIs.
 
 The goal of this library is to be as minimalistic as possible while providing maximum customization.  This is achieved by making transparent methods that can be easily overridden when necessary to handle edge cases and customize the behavior of an endpoint.
 
@@ -177,7 +177,7 @@ For our example, the only thing we really care about is the artist objects locat
 }
 ```
 
-Let's how it would look modeled as an ObjC object. (See Swift examples below).
+Let's see how it would look modeled as an ObjC object. (See Swift examples below).
 
 ####Spotify Models
 
@@ -217,7 +217,7 @@ Now let's fill in the properties that map to the JSON.  Our final model header w
 @end
 ```
 
-`GenomeMappableObject` protocol requires implementing an instance method that is called `mapping` and returns an `NSMutableDictionary`.  This will be used under the hood when converting the JSON response to model objects. Modelling supports the following syntax:
+`GenomeObject` protocol requires implementing a class method that is called `mapping` and returns an `NSDictionary`. This will be used under the hood when converting the JSON response to model objects. Modeling supports the following syntax:
 
 ```ObjC
 mapping[@"<#propertyName#>"] = @"<#associatedJsonKeyPath#>";
@@ -319,7 +319,7 @@ Note: You can declare `GenomeObject` protocol in the implementation file if you 
 
 This is a pretty straightforward object and our property names correspond directly with the JSON.  As of now, it is still necessary to declare these properties in your mapping.  This is done to allow absolute control over the operation.
 
-That's it, our models are all set up, now we need to set up our endpoints for the spotify api.
+That's it, our models are all set up, now we need to set up our endpoints for the spotify API.
 
 ####Spotify Endpoints
 
@@ -334,7 +334,7 @@ In your endpoints file, import <Polymer/PLYEndpoint.h>
 #import <Polymer/PLYEndpoint.h>
 ```
 
-The first thing I'm going to do is declare a base endpoint.  This is done to provide the base Url and any other request configurations you want for a given api.
+The first thing I'm going to do is declare a base endpoint.  This is done to provide the base URL and any other request configurations you want for a given API.
 
 ```ObjC
 #import <Foundation/Foundation.h>
@@ -360,7 +360,7 @@ Now let's look at the implementation:
 @end
 ```
 
-Spotify is a modern and clean api, and most characteristics are able to be inferred quite easily, if you would like more control over your base endpoint, you can create something more complex by adding more method overrides.  A more specified API might look something like this:
+Spotify is a modern and clean API, and most characteristics are able to be inferred quite easily, if you would like more control over your base endpoint, you can create something more complex by adding more method overrides.  A more specified API might look something like this:
 
 ```ObjC
 @implementation GHBaseEndpoint
@@ -436,13 +436,13 @@ Here's how our endpoints file looks after adding the search endpoint:
 
 An endpoint meant for use implements at minimum 3 methods.  `baseUrl`, `endpointUrl`, and `returnClass`.  In `SpotifySearchEndpoint` above, you'll notice that `baseUrl` isn't overridden.  This is because it subclasses from `SpotifyBaseEndpoint` which overrides the `baseUrl`.  All future subclasses can inherit this base.
 
-`baseUrl` - The base url for the api.  What the endpoints will be appended to.
+`baseUrl` - The base URL for the API.  What the endpoints will be appended to.
 
-`endpointUrl` - The url for the endpoint.  You can declare a more advanced endpoint by prefixing slugs w/ a colon `:`.  These can be smartly mapped from objects to generate endpoints. (more on slug mapping later).
+`endpointUrl` - The URL for the endpoint.  You can declare a more advanced endpoint by prefixing slugs w/ a colon `:`.  These can be smartly mapped from objects to generate endpoints. (more on slug mapping later).
 
 `responseKeyPath` - As we specified at the beginning, this is a simple example and we don't need all of the information from the response.  We only want the array of artists located at the key path `artists.items`.  By declaring this in our endpoint, we're telling it.  Fetch items from url endpoint `search`, then from the response, get the object at keypath `artists.items`.  Then map the objects within that response to type `SpotifyArtist`.  
 
-That's it, we're ready to use the search api!
+That's it, we're ready to use the search API!
 
 ####Use!
 
@@ -488,7 +488,7 @@ This can also be done to individual model objects, not just `NSArray`s.  The hea
 
 ###Endpoints
 
-Think of your api's endpoint as an object, and this class as its model.  It has the following components:
+Think of your API's endpoint as an object, and this class as its model.  It has the following components:
 
 It starts with a set of base properties that are meant to be overridden in your endpoint subclass.  
 
@@ -496,9 +496,9 @@ It starts with a set of base properties that are meant to be overridden in your 
 
 When consuming a webservice, there is often a base set of configurations that apply to all endpoints.  These overrides are often declared in a base class that is then subclassed by endpoints; however, these can always be overridden by an individual endpoint as necessary.
 
-#####Base Url
+#####Base URL
 
-This indicates the base Url that the endpoint Url should be appended to.  It is common practice to override this in a base class for your api and subclass further for endpoints (see Getting Started).
+This indicates the base Url that the endpoint URL should be appended to.  It is common practice to override this in a base class for your API and subclass further for endpoints (see Getting Started).
 
 ######Objc
 
@@ -518,7 +518,7 @@ override var baseUrl: String {
 
 #####Header Fields
 
-This is where you can declare the header fields necessary when making web requests to the api.  The most common use cases of this involve accept types and tokens.  Again, it is common for this to exist in the base endpoint for a given api, but it can be overriddent for specific endpoints as necessary.  A basic implementation can look something like this:
+This is where you can declare the header fields necessary when making web requests to the api.  The most common use cases of this involve accept types and tokens.  Again, it is common for this to exist in the base endpoint for a given API, but it can be overridden for specific endpoints as necessary.  A basic implementation can look something like this:
 
 ######ObjC
 
@@ -590,9 +590,9 @@ override var returnClass: AnyClass {
 }
 ```
 
-#####Endpoint Url
+#####Endpoint URL
 
-This is where you declare the endpoint to append to the base url.  You can also use this place to indicate slug paths to use when populating your url.  A common implementation looks something like this:
+This is where you declare the endpoint to append to the base URL.  You can also use this place to indicate slug paths to use when populating your URL.  A common implementation looks something like this:
 
 ######ObjC
 
@@ -612,7 +612,7 @@ override var endpointUrl: String {
 
 ####Slug Mapping
 
-Slug mapping is a powerful feature that allows you to populate a given endpoint with slug values as necessary.  For example, look at the endpoint url declared above as `posts/:identifier`.  This means that if we pass a slug into our endpoints initialization, our url will be filled in with the appropriate values.  Let's use the following example:
+Slug mapping is a powerful feature that allows you to populate a given endpoint with slug values as necessary.  For example, look at the endpoint URL declared above as `posts/:identifier`.  This means that if we pass a slug into our endpoints initialization, our URL will be filled in with the appropriate values.  Let's use the following example:
 
 ```ObjC
 PostsEndpoint *pe = [PostsEndpoint endpointWithSlug:@{@"identifier" : @"17"}];
@@ -625,7 +625,7 @@ This feature can be used several different ways.  The first, as you see above si
 
 #####1. Dictionaries
 
-If a dictionary has the key declared as a slug path ein the endpointUrl, the value for that key will be superimposed into the Url.  If no slug, or no value is found, that url component will be ommitted.  In the above example, our final url would be `http://someBaseUrl.com/posts` if the endpiont were passed a nil slug.
+If a dictionary has the key declared as a slug path ein the endpointUrl, the value for that key will be superimposed into the URL.  If no slug, or no value is found, that url component will be ommitted.  In the above example, our final URL would be `http://someBaseUrl.com/posts` if the endpiont were passed a nil slug.
 
 #####2. Objects - With Keys
 
@@ -651,7 +651,7 @@ If our `post` object declared above has an identifier of `352` then we would be 
 
 #####3. Multiple Object Types
 
-In some situations, we want to pass a variety of objects to an endpoint and define more specifically how that endpoint should be populated with the slug.  For these situations, you can override `valueForSlugPath:withSlug` to define what value should be used to populate the url.  Our endpoint might look like this:
+In some situations, we want to pass a variety of objects to an endpoint and define more specifically how that endpoint should be populated with the slug.  For these situations, you can override `valueForSlugPath:withSlug` to define what value should be used to populate the URL.  Our endpoint might look like this:
 
 ```ObjC
 @implementation PostsEndpoint
@@ -670,7 +670,6 @@ In some situations, we want to pass a variety of objects to an endpoint and defi
 ```
 
 By overriding as demonstrated above, we can pass our endpoint a `Dictionary`, a `Post` object, or a `Comment` object and when we fetch from our Posts endpoint, we'll interact with the appropriate endpoint.
-a
 
 ######Slug Mapping Nil Check
 
@@ -789,7 +788,7 @@ override var shouldAppendHeaderToResponse: Bool {
 
 ####Transform Response
 
-For some apis, the data we receive isn't able to be parsed a valid json representation for mapping.  This is most common with XML webservices.  In those situations, you can override `transformResponseDataToMappableRawType:`.  This can also be overridden for customize behavior of specialized circumstances.
+For some APIs, the data we receive isn't able to be parsed a valid json representation for mapping.  This is most common with XML webservices.  In those situations, you can override `transformResponseDataToMappableRawType:`.  This can also be overridden for customize behavior of specialized circumstances.
 
 ######ObjC
 
