@@ -217,7 +217,7 @@ Now let's fill in the properties that map to the JSON.  Our final model header w
 @end
 ```
 
-`GenomeMappableObject` protocol requires implementing an instance method that is called `mapping` and returns an `NSMutableDictionary`.  This will be used under the hood when converting the JSON response to model objects. Modeling supports the following syntax:
+`GenomeObject` protocol requires implementing a class method that is called `mapping` and returns an `NSDictionary`. This will be used under the hood when converting the JSON response to model objects. Modeling supports the following syntax:
 
 ```ObjC
 mapping[@"<#propertyName#>"] = @"<#associatedJsonKeyPath#>";
