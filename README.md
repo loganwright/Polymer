@@ -896,3 +896,7 @@ PostEndpoint *ep = [PostEndpoint endpointWithSlug:post];
 ####Mapping
 
 For more information, see <a href="https://github.com/loganwright/genome">Genome</a>
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/LoganWright/polymer/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
