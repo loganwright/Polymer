@@ -20,7 +20,6 @@
 		8047ABF81A9FF586008093A4 /* SpotifyArtist.m in Sources */ = {isa = PBXBuildFile; fileRef = 8047ABF31A9FF586008093A4 /* SpotifyArtist.m */; };
 		8047ABF91A9FF586008093A4 /* SpotifyImageRef.m in Sources */ = {isa = PBXBuildFile; fileRef = 8047ABF51A9FF586008093A4 /* SpotifyImageRef.m */; };
 		8047ABFA1A9FF586008093A4 /* SpotifyEndpoints.m in Sources */ = {isa = PBXBuildFile; fileRef = 8047ABF71A9FF586008093A4 /* SpotifyEndpoints.m */; };
-		806D78CC1AE856CA00A71CB0 /* PolymerSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 806D78CB1AE856CA00A71CB0 /* PolymerSwift.swift */; };
 		9F276AD54BD3DF0E8A87EECA /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DE0383B994C08B693808D1F3 /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -344,7 +343,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				8047ABEC1A9FF534008093A4 /* PLYNetworking.m in Sources */,
-				806D78CC1AE856CA00A71CB0 /* PolymerSwift.swift in Sources */,
 				8047ABEB1A9FF534008093A4 /* PLYEndpoint.m in Sources */,
 				802BF0D51B16B270005A62C3 /* Alt.swift in Sources */,
 				8047ABC61A9FF411008093A4 /* AppDelegate.m in Sources */,

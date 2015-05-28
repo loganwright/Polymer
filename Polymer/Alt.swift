@@ -8,6 +8,8 @@
 
 import UIKit
 
+// MARK: Endpoint Descriptor
+
 @objc public protocol EndpointDescriptor : class {
     
     // MARK: Required Properties
@@ -32,10 +34,142 @@ import UIKit
     init()
 }
 
-public class AltEndpoint<T : EndpointDescriptor, U : GenomeObject> {
+// MARK: Result
+
+public enum Response<T : GenomeObject> {
+    case Result([T])
+    case Error(NSError)
+}
+
+// MARK: Backing Endpoint
+
+/*!
+*  Generic classes can't override objective-c selectors, so we need this class to be non generic and parse our genericized class as necessary.
+*/
+private final class BackingEndpoint : PLYEndpoint {
     
-    final let returnClass = U.self
-    final let descriptor = T()
+    // MARK: Required Properties
+    
+    private let _returnClass: AnyClass
+    private let _endpointUrl: String
+    private let _baseUrl: String
+    
+    // MARK: Optional Properties
+    
+    private let _responseKeyPath: String?
+    private let _acceptableContentTypes: Set<String>?
+    private let _headerFields: [String : AnyObject]?
+    private let _requestSerializer: AFHTTPRequestSerializer?
+    private let _responseSerializer: AFHTTPResponseSerializer?
+    private let _shouldAppendHeaderToResponse: Bool
+    
+    // MARK: Initialization
+    
+    init<T : EndpointDescriptor, U : GenomeObject>(endpoint: Endpoint<T,U>) {
+        
+        // MARK: Required
+        
+        _baseUrl = endpoint.baseUrl
+        _returnClass = endpoint.returnClass
+        _endpointUrl = endpoint.endpointUrl
+        
+        // MARK: Optional
+        
+        _responseKeyPath = endpoint.responseKeyPath
+        _acceptableContentTypes = endpoint.acceptableContentTypes
+        _headerFields = endpoint.headerFields
+        
+        // MARK: Serializers
+        
+        _requestSerializer = endpoint.requestSerializer
+        _responseSerializer = endpoint.responseSerializer
+        
+        // MARK: Header Values
+        
+        _shouldAppendHeaderToResponse = endpoint.shouldAppendHeaderToResponse
+        
+        // MARK: Actual Initializer
+        
+        super.init(slug: endpoint.slug, andParameters: endpoint.parameters)
+    }
+    
+    // MARK: Required Overrides
+    
+    override var baseUrl: String {
+        return _baseUrl
+    }
+    
+    override var returnClass: AnyClass {
+        return _returnClass
+    }
+    
+    override var endpointUrl: String {
+        return _endpointUrl
+    }
+    
+    // MARK: Optional Overrides
+    
+    override var responseKeyPath: String? {
+        return _responseKeyPath
+    }
+    
+    override var acceptableContentTypes: Set<NSObject>? {
+        var acceptableContentTypes = Set<NSObject>()
+        
+        // Can't just convert to 'Set<NSObject>' for whatever reason
+        if let types = _acceptableContentTypes {
+            for type in types {
+                acceptableContentTypes.insert(type)
+            }
+        }
+        return acceptableContentTypes
+    }
+    
+    override var headerFields: [NSObject : AnyObject]? {
+        var headerFields: [NSObject : AnyObject] = [:]
+        
+        // Can't just convert to '[NSObject : AnyObject]' for whatever reason
+        if let fields = _headerFields {
+            for (key,val) in fields {
+                headerFields[key] = val
+            }
+        }
+        return headerFields
+    }
+    
+    override var shouldAppendHeaderToResponse: Bool {
+        return _shouldAppendHeaderToResponse
+    }
+    
+    // MARK: Serializers
+    
+    override var requestSerializer: AFHTTPRequestSerializer? {
+        return _requestSerializer
+    }
+    
+    override var responseSerializer: AFHTTPResponseSerializer? {
+        return _responseSerializer
+    }
+}
+
+// MARK: NSError
+
+// TODO: Subclass
+
+extension NSError {
+    class func errorWithDescription(description: String) -> NSError {
+        return NSError(domain: "PolymerError", code: 1, userInfo: [NSLocalizedDescriptionKey : description])
+    }
+}
+
+// MARK: Endpoint
+
+public final class Endpoint<T : EndpointDescriptor, U : GenomeObject> {
+    
+    // MARK: TypeAliases
+    
+    typealias ResponseBlock = (response: Response<U>) -> Void
+    private typealias ObjCResponseBlock = (result: AnyObject?, error: NSError?) -> Void
     
     // MARK: Required Properties
     
@@ -52,10 +186,16 @@ public class AltEndpoint<T : EndpointDescriptor, U : GenomeObject> {
     
     var shouldAppendHeaderToResponse: Bool { return descriptor.shouldAppendHeaderToResponse ?? false }
     
+    // MARK: Final Properties
+    
+    private final let returnClass = U.self
+    private final let descriptor = T()
+    
     // MARK: Initialization
     
     private(set) var slug: AnyObject?
     private(set) var parameters: PLYParameterEncodableType?
+    private var ep: BackingEndpoint!
     
     convenience init(slug: AnyObject?) {
         self.init(slug: slug, parameters: nil)
@@ -68,13 +208,43 @@ public class AltEndpoint<T : EndpointDescriptor, U : GenomeObject> {
     required public init(slug: AnyObject?, parameters: PLYParameterEncodableType?) {
         self.slug = slug
         self.parameters = parameters
+        self.ep = BackingEndpoint(endpoint: self)
     }
     
     // MARK: Networking
     
-    func get(completion: (response: Response<U>) -> Void) {
-        let ep = BackingEndpoint(endpoint: self)
-        ep.getWithCompletion { (result, error) -> Void in
+    func get(completion: ResponseBlock) {
+        let wrappedCompletion = objcResponseBlockForCompletion(completion)
+        ep.getWithCompletion(wrappedCompletion)
+    }
+    
+    func post(completion: ResponseBlock) {
+        let wrappedCompletion = objcResponseBlockForCompletion(completion)
+        ep.postWithCompletion(wrappedCompletion)
+    }
+
+    func put(completion: ResponseBlock) {
+        let wrappedCompletion = objcResponseBlockForCompletion(completion)
+        ep.putWithCompletion(wrappedCompletion)
+    }
+    
+    func patch(completion: ResponseBlock) {
+        let wrappedCompletion = objcResponseBlockForCompletion(completion)
+        ep.putWithCompletion(wrappedCompletion)
+    }
+    
+    func delete(completion: ResponseBlock) {
+        let wrappedCompletion = objcResponseBlockForCompletion(completion)
+        ep.deleteWithCompletion(wrappedCompletion)
+    }
+    
+    /*!
+    Used to map the objc response to the swift response
+    
+    :param: completion the completion passed by the user to call with the Result
+    */
+    private func objcResponseBlockForCompletion(completion: ResponseBlock) -> ObjCResponseBlock {
+        return { (result, error) -> Void in
             let response: Response<U>
             if let _result = result as? [U] {
                 response = .Result(_result)
@@ -107,9 +277,17 @@ class Artists : Base {
     let responseKeyPath = "artists.items"
 }
 
+// MARK: Testing
+
+class Test : NSObject {
+    class func test() {
+        println("-- TESTING -- \n\n\n\n\n")
+        TEST_ALT()
+    }
+}
 
 func TEST_ALT() {
-    let ep = AltEndpoint<Artists, SpotifyArtist>(parameters: ["q" : "beyonce", "type" : "artist"])
+    let ep = Endpoint<Artists, SpotifyArtist>(parameters: ["q" : "beyonce", "type" : "artist"])
     ep.get { (response) -> Void in
         switch response {
         case .Result(let artists):
