@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		802BF0D51B16B270005A62C3 /* Alt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 802BF0D41B16B270005A62C3 /* Alt.swift */; };
 		8047ABC31A9FF411008093A4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8047ABC21A9FF411008093A4 /* main.m */; };
 		8047ABC61A9FF411008093A4 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8047ABC51A9FF411008093A4 /* AppDelegate.m */; };
 		8047ABCC1A9FF411008093A4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8047ABCA1A9FF411008093A4 /* Main.storyboard */; };
@@ -35,6 +36,7 @@
 
 /* Begin PBXFileReference section */
 		3012B6C3FE5EB86E20D2425A /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		802BF0D41B16B270005A62C3 /* Alt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Alt.swift; sourceTree = "<group>"; };
 		8047ABBD1A9FF411008093A4 /* Polymer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Polymer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8047ABC11A9FF411008093A4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8047ABC21A9FF411008093A4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = main.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -201,6 +203,7 @@
 			isa = PBXGroup;
 			children = (
 				806D78CB1AE856CA00A71CB0 /* PolymerSwift.swift */,
+				802BF0D41B16B270005A62C3 /* Alt.swift */,
 			);
 			name = Swift;
 			sourceTree = "<group>";
@@ -343,6 +346,7 @@
 				8047ABEC1A9FF534008093A4 /* PLYNetworking.m in Sources */,
 				806D78CC1AE856CA00A71CB0 /* PolymerSwift.swift in Sources */,
 				8047ABEB1A9FF534008093A4 /* PLYEndpoint.m in Sources */,
+				802BF0D51B16B270005A62C3 /* Alt.swift in Sources */,
 				8047ABC61A9FF411008093A4 /* AppDelegate.m in Sources */,
 				8047ABF91A9FF586008093A4 /* SpotifyImageRef.m in Sources */,
 				8047ABC31A9FF411008093A4 /* main.m in Sources */,

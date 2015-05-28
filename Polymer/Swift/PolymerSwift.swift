@@ -17,7 +17,7 @@ enum Response<T : GenomeObject> {
     case Error(NSError)
 }
 
-private class BackingEndpoint : PLYEndpoint {
+internal class BackingEndpoint : PLYEndpoint {
     
     // MARK: Required Properties
     
@@ -35,6 +35,34 @@ private class BackingEndpoint : PLYEndpoint {
     private let _shouldAppendHeaderToResponse: Bool
     
     // MARK: Initialization
+    
+    init<T : EndpointDescriptor, U : GenomeObject>(endpoint: AltEndpoint<T,U>) {
+        
+        // MARK: Required
+        
+        _baseUrl = endpoint.baseUrl
+        _returnClass = endpoint.returnClass
+        _endpointUrl = endpoint.endpointUrl
+        
+        // MARK: Optional
+        
+        _responseKeyPath = endpoint.responseKeyPath
+        _acceptableContentTypes = endpoint.acceptableContentTypes
+        _headerFields = endpoint.headerFields
+        
+        // MARK: Serializers
+        
+        _requestSerializer = endpoint.requestSerializer
+        _responseSerializer = endpoint.responseSerializer
+        
+        // MARK: Header Values
+        
+        _shouldAppendHeaderToResponse = endpoint.shouldAppendHeaderToResponse
+        
+        // MARK: Actual Initializer
+        
+        super.init(slug: endpoint.slug, andParameters: endpoint.parameters)
+    }
     
     init<T : GenomeObject>(endpoint: Endpoint<T>) {
         
@@ -147,13 +175,13 @@ public class Endpoint<T : GenomeObject> {
     private(set) var slug: AnyObject?
     private(set) var parameters: PLYParameterEncodableType?
     
-//    convenience init(slug: AnyObject?) {
-//        self.init(slug: slug, parameters: nil)
-//    }
-//    
-//    convenience init(parameters: PLYParameterEncodableType?) {
-//        self.init(slug: nil, parameters: parameters)
-//    }
+    convenience init(slug: AnyObject?) {
+        self.init(slug: slug, parameters: nil)
+    }
+    
+    convenience init(parameters: PLYParameterEncodableType?) {
+        self.init(slug: nil, parameters: parameters)
+    }
     
     required public init(slug: AnyObject?, parameters: PLYParameterEncodableType?) {
         self.slug = slug
@@ -185,30 +213,10 @@ public class Endpoint<T : GenomeObject> {
     }
 }
 
-private extension NSError {
+extension NSError {
     class func errorWithDescription(description: String) -> NSError {
         return NSError(domain: "PolymerError", code: 1, userInfo: [NSLocalizedDescriptionKey : description])
     }
-}
-
-@objc protocol EndpointDescriptor : class {
-    
-    // MARK: Required Properties
-    
-    var baseUrl: String { get }
-    var endpointUrl: String { get }
-    // T where T : GenomeObject
-    var returnClass: AnyClass { get }
-    
-    // MARK: Optional Properties
-    
-    optional var responseKeyPath: String? { get }
-    optional var acceptableContentTypes: Set<String>? { get }
-    optional var headerFields: [String : AnyObject]? { get }
-    optional var requestSerializer: AFHTTPRequestSerializer? { get }
-    optional var responseSerializer: AFHTTPResponseSerializer? { get }
-    
-    optional var shouldAppendHeaderToResponse: Bool { get }
 }
 
 //class SpotifyBaseEndpoint<T where T : SpotifyObject, T : GenomeObject>  : Endpoint<T> {
@@ -235,7 +243,9 @@ class SpotifySearchEndpoint<T : GenomeObject> : SpotifyBaseEndpoint<T> {
 
 class Test : NSObject {
     class func test() {
-        println("TEST RAN")
+        println("-- TESTING -- \n\n\n\n\n")
+        TEST_ALT()
+        println("\n\n\n\n")
         let ep = SpotifySearchEndpoint<SpotifyArtist>.endpoint(slug: nil, parameters: ["q" : "beyonce", "type" : "artist"])
         ep.get { (response) -> Void in
             switch response {
