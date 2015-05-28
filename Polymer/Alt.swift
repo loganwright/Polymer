@@ -8,6 +8,14 @@
 
 import UIKit
 
+// MARK: Result
+// TODO: Possibly do IndividualResult(T) and ArrayResult([T])
+
+public enum Response<T : GenomeObject> {
+    case Result([T])
+    case Error(NSError)
+}
+
 // MARK: Endpoint Descriptor
 
 @objc public protocol EndpointDescriptor : class {
@@ -26,19 +34,112 @@ import UIKit
     optional var headerFields: [String : AnyObject] { get }
     optional var requestSerializer: AFHTTPRequestSerializer { get }
     optional var responseSerializer: AFHTTPResponseSerializer { get }
-    
     optional var shouldAppendHeaderToResponse: Bool { get }
-    
-    // MARK: Initializer
-    
-    init()
 }
 
-// MARK: Result
+// MARK: Endpoint
 
-public enum Response<T : GenomeObject> {
-    case Result([T])
-    case Error(NSError)
+public final class Endpoint<T,U where T : EndpointDescriptor, T : NSObject, U : GenomeObject> {
+    
+    // MARK: TypeAliases
+    
+    typealias ResponseBlock = (response: Response<U>) -> Void
+    private typealias ObjCResponseBlock = (result: AnyObject?, error: NSError?) -> Void
+    
+    // MARK: Required Properties
+    
+    var baseUrl: String { return descriptor.baseUrl }
+    var endpointUrl: String { return descriptor.endpointUrl }
+    
+    // MARK: Optional Properties
+    
+    var responseKeyPath: String? { return descriptor.responseKeyPath }
+    var acceptableContentTypes: Set<String>? { return descriptor.acceptableContentTypes }
+    var headerFields: [String : AnyObject]? { return descriptor.headerFields }
+    var requestSerializer: AFHTTPRequestSerializer? { return descriptor.requestSerializer }
+    var responseSerializer: AFHTTPResponseSerializer? { return descriptor.responseSerializer }
+    
+    var shouldAppendHeaderToResponse: Bool { return descriptor.shouldAppendHeaderToResponse ?? false }
+    
+    // MARK: Private Properties
+    // TODO: Possibly allow updating slug?  in didSet, update `ep`
+    
+    private let returnClass = U.self
+    private let descriptor = T()
+    
+    private let slug: AnyObject?
+    private let parameters: PLYParameterEncodableType?
+    
+    private var ep: BackingEndpoint!
+    
+    // MARK: Initialization
+    
+    convenience init() {
+        self.init(slug: nil, parameters: nil)
+    }
+    
+    convenience init(slug: AnyObject?) {
+        self.init(slug: slug, parameters: nil)
+    }
+    
+    convenience init(parameters: PLYParameterEncodableType?) {
+        self.init(slug: nil, parameters: parameters)
+    }
+    
+    required public init(slug: AnyObject?, parameters: PLYParameterEncodableType?) {
+        self.slug = slug
+        self.parameters = parameters
+        self.ep = BackingEndpoint(endpoint: self)
+    }
+    
+    // MARK: Networking
+    
+    func get(completion: ResponseBlock) {
+        let wrappedCompletion = objcResponseBlockForCompletion(completion)
+        ep.getWithCompletion(wrappedCompletion)
+    }
+    
+    func post(completion: ResponseBlock) {
+        let wrappedCompletion = objcResponseBlockForCompletion(completion)
+        ep.postWithCompletion(wrappedCompletion)
+    }
+    
+    func put(completion: ResponseBlock) {
+        let wrappedCompletion = objcResponseBlockForCompletion(completion)
+        ep.putWithCompletion(wrappedCompletion)
+    }
+    
+    func patch(completion: ResponseBlock) {
+        let wrappedCompletion = objcResponseBlockForCompletion(completion)
+        ep.putWithCompletion(wrappedCompletion)
+    }
+    
+    func delete(completion: ResponseBlock) {
+        let wrappedCompletion = objcResponseBlockForCompletion(completion)
+        ep.deleteWithCompletion(wrappedCompletion)
+    }
+    
+    /*!
+    Used to map the objc response to the swift response
+    
+    :param: completion the completion passed by the user to call with the Result
+    */
+    private func objcResponseBlockForCompletion(completion: ResponseBlock) -> ObjCResponseBlock {
+        return { (result, error) -> Void in
+            let response: Response<U>
+            if let _result = result as? [U] {
+                response = .Result(_result)
+            } else if let _result = result as? U {
+                response = .Result([_result])
+            } else if let _error = error {
+                response = .Error(_error)
+            } else {
+                let err = PolymerError(message: "No Result: \(result) or Error: \(error).  Unknown.")
+                response = .Error(err)
+            }
+            completion(response: response)
+        }
+    }
 }
 
 // MARK: Backing Endpoint
@@ -154,121 +255,33 @@ private final class BackingEndpoint : PLYEndpoint {
 
 // MARK: NSError
 
-// TODO: Subclass
-
-extension NSError {
-    class func errorWithDescription(description: String) -> NSError {
-        return NSError(domain: "PolymerError", code: 1, userInfo: [NSLocalizedDescriptionKey : description])
-    }
-}
-
-// MARK: Endpoint
-
-public final class Endpoint<T : EndpointDescriptor, U : GenomeObject> {
+/*!
+*  Not sure if necessary, but a wrapper on error for future
+*/
+private class PolymerError : NSError {
     
-    // MARK: TypeAliases
+    // MARK: Properties
     
-    typealias ResponseBlock = (response: Response<U>) -> Void
-    private typealias ObjCResponseBlock = (result: AnyObject?, error: NSError?) -> Void
-    
-    // MARK: Required Properties
-    
-    var baseUrl: String { return descriptor.baseUrl }
-    var endpointUrl: String { return descriptor.endpointUrl }
-    
-    // MARK: Optional Properties
-    
-    var responseKeyPath: String? { return descriptor.responseKeyPath }
-    var acceptableContentTypes: Set<String>? { return descriptor.acceptableContentTypes }
-    var headerFields: [String : AnyObject]? { return descriptor.headerFields }
-    var requestSerializer: AFHTTPRequestSerializer? { return descriptor.requestSerializer ?? AFJSONRequestSerializer(writingOptions: .PrettyPrinted) }
-    var responseSerializer: AFHTTPResponseSerializer? { return descriptor.responseSerializer ?? AFJSONResponseSerializer(readingOptions: .allZeros) }
-    
-    var shouldAppendHeaderToResponse: Bool { return descriptor.shouldAppendHeaderToResponse ?? false }
-    
-    // MARK: Final Properties
-    
-    private final let returnClass = U.self
-    private final let descriptor = T()
+    let message: String
     
     // MARK: Initialization
     
-    private(set) var slug: AnyObject?
-    private(set) var parameters: PLYParameterEncodableType?
-    private var ep: BackingEndpoint!
-    
-    convenience init(slug: AnyObject?) {
-        self.init(slug: slug, parameters: nil)
+    required init(code: Int = 1, message: String) {
+        self.message = message
+        super.init(domain: "com.polymer.error", code: 1, userInfo: [NSLocalizedDescriptionKey : message])
     }
     
-    convenience init(parameters: PLYParameterEncodableType?) {
-        self.init(slug: nil, parameters: parameters)
-    }
-    
-    required public init(slug: AnyObject?, parameters: PLYParameterEncodableType?) {
-        self.slug = slug
-        self.parameters = parameters
-        self.ep = BackingEndpoint(endpoint: self)
-    }
-    
-    // MARK: Networking
-    
-    func get(completion: ResponseBlock) {
-        let wrappedCompletion = objcResponseBlockForCompletion(completion)
-        ep.getWithCompletion(wrappedCompletion)
-    }
-    
-    func post(completion: ResponseBlock) {
-        let wrappedCompletion = objcResponseBlockForCompletion(completion)
-        ep.postWithCompletion(wrappedCompletion)
-    }
-
-    func put(completion: ResponseBlock) {
-        let wrappedCompletion = objcResponseBlockForCompletion(completion)
-        ep.putWithCompletion(wrappedCompletion)
-    }
-    
-    func patch(completion: ResponseBlock) {
-        let wrappedCompletion = objcResponseBlockForCompletion(completion)
-        ep.putWithCompletion(wrappedCompletion)
-    }
-    
-    func delete(completion: ResponseBlock) {
-        let wrappedCompletion = objcResponseBlockForCompletion(completion)
-        ep.deleteWithCompletion(wrappedCompletion)
-    }
-    
-    /*!
-    Used to map the objc response to the swift response
-    
-    :param: completion the completion passed by the user to call with the Result
-    */
-    private func objcResponseBlockForCompletion(completion: ResponseBlock) -> ObjCResponseBlock {
-        return { (result, error) -> Void in
-            let response: Response<U>
-            if let _result = result as? [U] {
-                response = .Result(_result)
-            } else if let _result = result as? U {
-                response = .Result([_result])
-            } else if let _error = error {
-                response = .Error(_error)
-            } else {
-                let err = NSError.errorWithDescription("No Result: \(result) or Error: \(error).  Unknown.")
-                response = .Error(err)
-            }
-            completion(response: response)
-        }
+    required init(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }
 
 // MARK: Spotify Endpoint Descriptors
 
-@objc class Base: EndpointDescriptor {
+class Base: NSObject, EndpointDescriptor {
     let baseUrl = "https://api.spotify.com/v1"
     var endpointUrl: String { return "" }
     var returnClass: AnyClass { return SpotifyObject.self }
-    
-    required init() {}
 }
 
 class Artists : Base {
