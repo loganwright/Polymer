@@ -278,17 +278,19 @@ private class PolymerError : NSError {
 
 // MARK: Spotify Endpoint Descriptors
 
-class Base: NSObject, EndpointDescriptor {
+class BaseEndpointDescriptor: NSObject, EndpointDescriptor {
     let baseUrl = "https://api.spotify.com/v1"
     var endpointUrl: String { return "" }
     var returnClass: AnyClass { return SpotifyObject.self }
 }
 
-class Artists : Base {
+class ArtistsEndpointDescriptor : BaseEndpointDescriptor {
     override var endpointUrl: String { return "search" }
     override var returnClass: AnyClass { return SpotifyArtist.self }
     let responseKeyPath = "artists.items"
 }
+
+typealias ArtistsEndpoint = Endpoint<ArtistsEndpointDescriptor, SpotifyArtist>
 
 // MARK: Testing
 
@@ -299,8 +301,9 @@ class Test : NSObject {
     }
 }
 
+
 func TEST_ALT() {
-    let ep = Endpoint<Artists, SpotifyArtist>(parameters: ["q" : "beyonce", "type" : "artist"])
+    let ep = ArtistsEndpoint(parameters: ["q" : "beyonce", "type" : "artist"])
     ep.get { (response) -> Void in
         switch response {
         case .Result(let artists):
