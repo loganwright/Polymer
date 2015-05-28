@@ -37,7 +37,7 @@ static BOOL LOG = NO;
     }
     
     NSSet *acceptableContentTypes = endpoint.acceptableContentTypes;
-    if (acceptableContentTypes) {
+    if (acceptableContentTypes.count > 0) {
         manager.responseSerializer.acceptableContentTypes = acceptableContentTypes;
     }
     

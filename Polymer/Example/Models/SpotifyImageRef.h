@@ -8,8 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #import <Genome/Genome.h>
+#import "SpotifyArtist.h"
 
-@interface SpotifyImageRef : NSObject <GenomeObject>
+@interface SpotifyImageRef : SpotifyObject <GenomeObject>
 @property (nonatomic) NSInteger height;
 @property (nonatomic) NSInteger width;
 @property (copy, nonatomic) NSURL *url;

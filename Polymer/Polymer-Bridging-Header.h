@@ -4,6 +4,7 @@
 
 #import "PLYEndpoint.h"
 #import <Genome/Genome.h>
+#import <AFNetworking/AFNetworking.h>
 #import "SpotifyArtist.h"
 #import "SpotifyImageRef.h"
 #import "SpotifyEndpoints.h"

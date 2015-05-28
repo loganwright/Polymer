@@ -8,6 +8,12 @@
 
 #import "SpotifyArtist.h"
 
+@implementation SpotifyObject
++ (NSDictionary *)mapping {
+    return @{};
+}
+@end
+
 @implementation SpotifyArtist
 + (NSDictionary *)mapping {
     NSMutableDictionary *mapping = [NSMutableDictionary dictionary];
