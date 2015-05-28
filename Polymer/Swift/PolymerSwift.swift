@@ -10,31 +10,6 @@
 endpoint.get.then
 */
 
-// MARK: UrlType
-
-protocol UrlType {
-    var url: NSURL { get }
-    var string: String { get }
-}
-
-extension NSURL : UrlType {
-    var url: NSURL {
-        return self
-    }
-    var string: String {
-        return self.absoluteString!
-    }
-}
-
-extension String : UrlType {
-    var url: NSURL {
-        return NSURL(string: self)!
-    }
-    var string: String {
-        return self
-    }
-}
-
 // MARK: Result
 
 enum Response<T : GenomeObject> {
@@ -47,8 +22,8 @@ private class BackingEndpoint : PLYEndpoint {
     // MARK: Required Properties
     
     private let _returnClass: AnyClass
-    private let _endpointUrl: UrlType
-    private let _baseUrl: UrlType
+    private let _endpointUrl: String
+    private let _baseUrl: String
     
     // MARK: Optional Properties
     
@@ -92,7 +67,7 @@ private class BackingEndpoint : PLYEndpoint {
     // MARK: Required Overrides
     
     override var baseUrl: String {
-        return _baseUrl.string
+        return _baseUrl
     }
 
     override var returnClass: AnyClass {
@@ -100,7 +75,7 @@ private class BackingEndpoint : PLYEndpoint {
     }
     
     override var endpointUrl: String {
-        return _endpointUrl.string
+        return _endpointUrl
     }
     
     // MARK: Optional Overrides
@@ -148,21 +123,22 @@ private class BackingEndpoint : PLYEndpoint {
     }
 }
 
-class Endpoint<T : GenomeObject> {
+public class Endpoint<T : GenomeObject> {
+    
+    final let returnClass = T.self
     
     // MARK: Required Properties
     
-    var baseUrl: UrlType!
-    var endpointUrl: UrlType!
-    final let returnClass = T.self
+    var baseUrl: String { fatalError("Must override") }
+    var endpointUrl: String { fatalError("Must override") }
     
     // MARK: Optional Properties
     
-    var responseKeyPath: String?
-    var acceptableContentTypes: Set<String>?
-    var headerFields: [String : AnyObject]?
-    var requestSerializer: AFHTTPRequestSerializer? // = AFJSONRequestSerializer(writingOptions: .PrettyPrinted)
-    var responseSerializer: AFHTTPResponseSerializer? // = AFJSONResponseSerializer(readingOptions: .allZeros)
+    var responseKeyPath: String? { return nil }
+    var acceptableContentTypes: Set<String>? { return nil }
+    var headerFields: [String : AnyObject]? { return nil }
+    var requestSerializer: AFHTTPRequestSerializer? { return AFJSONRequestSerializer(writingOptions: .PrettyPrinted) }
+    var responseSerializer: AFHTTPResponseSerializer? { return AFJSONResponseSerializer(readingOptions: .allZeros) }
     
     var shouldAppendHeaderToResponse: Bool = false
     
@@ -171,14 +147,26 @@ class Endpoint<T : GenomeObject> {
     private(set) var slug: AnyObject?
     private(set) var parameters: PLYParameterEncodableType?
     
-    init(slug: AnyObject? = nil, parameters: PLYParameterEncodableType? = nil) {
+//    convenience init(slug: AnyObject?) {
+//        self.init(slug: slug, parameters: nil)
+//    }
+//    
+//    convenience init(parameters: PLYParameterEncodableType?) {
+//        self.init(slug: nil, parameters: parameters)
+//    }
+    
+    required public init(slug: AnyObject?, parameters: PLYParameterEncodableType?) {
         self.slug = slug
         self.parameters = parameters
     }
     
+    class func endpoint(slug: AnyObject? = nil, parameters: PLYParameterEncodableType?) -> Self {
+        return self(slug: slug, parameters: parameters)
+    }
+    
     // MARK: Networking
     
-    func Get(completion: (response: Response<T>) -> Void) {
+    func get(completion: (response: Response<T>) -> Void) {
         let ep = BackingEndpoint(endpoint: self)
         ep.getWithCompletion { (result, error) -> Void in
             let response: Response<T>
@@ -203,149 +191,53 @@ private extension NSError {
     }
 }
 
-//class BackingEndpoint : PLYEndpoint {
-//    var _returnClass: AnyClass!
-//    var _endpointUrl: String!
-//    var _responseKeyPath: String?
-//    var _baseUrl: String!
-//    
-//    override init!(slug: AnyObject!, andParameters parameters: PLYParameterEncodableType!) {
-//        super.init(slug: slug, andParameters: parameters)
-//    }
-//    
-//    override var returnClass: AnyClass {
-//        return _returnClass
-//    }
-//    
-//    override var endpointUrl: String {
-//        return _endpointUrl
-//    }
-//    
-//    override var responseKeyPath: String? {
-//        return _responseKeyPath
-//    }
-//    
-//    override var baseUrl: String {
-//        return _baseUrl
-//    }
-//}
-
-//class Endpoint<T> {
-//    typealias ResponseClass = T
-//    
-//    private var backingEndpoint: BackingEndpoint?
-//    
-//    init(slug: AnyObject) {
-//        backingEndpoint = BackingEndpoint(slug: slug)
-//    }
-//    init(params: PLYParameterEncodableType) {
-//        backingEndpoint = BackingEndpoint(parameters: params)
-//    }
-//    init(slug: AnyObject, params: PLYParameterEncodableType) {
-//        backingEndpoint = BackingEndpoint(slug: slug, andParameters: params)
-//    }
-//    
-//    
-//    func setup() {
-//        backingEndpoint?._responseKeyPath = responseKeyPath
-//        backingEndpoint?._returnClass = returnClass
-//        backingEndpoint?._endpointUrl = endpointUrl
-//        backingEndpoint?._baseUrl = baseUrl
-//    }
-//    
-//    func GET(completion: (response: [ResponseClass], error: NSError?) -> Void) {
-//        backingEndpoint?.getWithCompletion { (_response, _err) -> Void in
-//            var mapped: [ResponseClass] = []
-//            if let resp = _response as? [ResponseClass] {
-//                mapped = resp
-//            } else if let resp = _response as? ResponseClass {
-//                mapped = [resp]
-//            }
-//            completion(response: mapped, error: _err)
-//        }
-//    }
-//    
-//    var endpointUrl: String {
-//        return ""
-//    }
-//    
-//    var baseUrl: String {
-//        return ""
-//    }
-//    
-//    var returnClass: AnyClass {
-//        fatalError("broken")
-//    }
-//    
-//    var responseKeyPath: String? {
-//        println()
-//        return nil
-//    }
-//}
-
-
-protocol ResponseMappable {}
-extension Array : ResponseMappable {}
-
-extension PLYEndpoint {
-//    func GET<T>(result: PolymerResult<T>) {
-//        
-//    }
-//    func GET<T where T : ResponseMappable || T : GenomeObject>(completion: (response: T?, error: NSError?) -> Void) {
-//        
-//    }
+@objc protocol EndpointDescriptor : class {
+    
+    // MARK: Required Properties
+    
+    var baseUrl: String { get }
+    var endpointUrl: String { get }
+    // T where T : GenomeObject
+    var returnClass: AnyClass { get }
+    
+    // MARK: Optional Properties
+    
+    optional var responseKeyPath: String? { get }
+    optional var acceptableContentTypes: Set<String>? { get }
+    optional var headerFields: [String : AnyObject]? { get }
+    optional var requestSerializer: AFHTTPRequestSerializer? { get }
+    optional var responseSerializer: AFHTTPResponseSerializer? { get }
+    
+    optional var shouldAppendHeaderToResponse: Bool { get }
 }
 
-//class BaseEndpoint<T : GenomeObject> : Endpoint<T> {
-//    override var baseUrl: String {
-//        return "https://api.spotify.com/v1"
-//    }
-//}
-//
-//class SearchEndpoint<T : SpotifyArtist> : BaseEndpoint<T> {
-//    override var returnClass: AnyClass {
-//        return SpotifyArtist.self
-//    }
-//    override var endpointUrl: String {
-//        return "search"
-//    }
-//    override var responseKeyPath: String {
-//        return "artists.items"
-//    }
-//}
-
-
-// MARK: Spotify Endpoints
-
-/**
-*  This is an empty class to satisfy `returnClass` requirements of PLYEndpoint.  `SpotifyObject` only returns success / failure
-*/
-//class SpotifyObject : NSObject, GenomeObject {
-//    class func mapping() -> [NSObject : AnyObject]! {
-//        return [:]
-//    }
-//}
-
-class SpotifyBaseEndpoint<T where T : SpotifyObject, T : GenomeObject>  : Endpoint<T> {
-    override init(slug: AnyObject? = nil, parameters: PLYParameterEncodableType? = nil) {
+//class SpotifyBaseEndpoint<T where T : SpotifyObject, T : GenomeObject>  : Endpoint<T> {
+class SpotifyBaseEndpoint<T : GenomeObject>  : Endpoint<T> {
+    override var baseUrl: String {
+        return "https://api.spotify.com/v1"
+    }
+    
+    required init(slug: AnyObject? = nil, parameters: PLYParameterEncodableType? = nil) {
         super.init(slug: slug, parameters: parameters)
-        baseUrl = "https://api.spotify.com/v1"
+        //        endpointUrl = "search"
+        //        responseKeyPath = "artists.items"
     }
 }
 
-class SpotifySearchEndpoint<T where T : SpotifyArtist, T : GenomeObject> : SpotifyBaseEndpoint<T> {
-    override init(slug: AnyObject? = nil, parameters: PLYParameterEncodableType? = nil) {
+//class SpotifySearchEndpoint<T where T : SpotifyArtist, T : GenomeObject> : SpotifyBaseEndpoint<T> {
+class SpotifySearchEndpoint<T : GenomeObject> : SpotifyBaseEndpoint<T> {
+    override var endpointUrl: String { return "search" }
+    override var responseKeyPath: String? { return "artists.items" }
+    required init(slug: AnyObject? = nil, parameters: PLYParameterEncodableType? = nil) {
         super.init(slug: slug, parameters: parameters)
-        endpointUrl = "search"
-        responseKeyPath = "artists.items"
     }
 }
 
 class Test : NSObject {
     class func test() {
         println("TEST RAN")
-        let ep = SpotifySearchEndpoint<SpotifyArtist>(parameters: ["q" : "beyonce", "type" : "artist"])
-        ep.Get { (response) -> Void in
+        let ep = SpotifySearchEndpoint<SpotifyArtist>.endpoint(slug: nil, parameters: ["q" : "beyonce", "type" : "artist"])
+        ep.get { (response) -> Void in
             switch response {
             case .Result(let artists):
                 println("Got: \(artists) ")
@@ -353,17 +245,5 @@ class Test : NSObject {
                 println("Got err: \(err)")
             }
         }
-//        let ep = Endpoint<SpotifyArtist>(
-//            params: [
-//                "q" : "beyonce",
-//                "type" : "artist"
-//            ]
-//        )
-//
-//        ep.GET { (response: [SpotifyArtist]?, error: NSError?) -> Void in
-//            let names: [String] = response?.map { $0.name } ?? []
-//            let pr = join("\n", names)
-//            println(pr)
-//        }
     }
 }
