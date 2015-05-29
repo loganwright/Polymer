@@ -43,7 +43,7 @@ typealias ResponseTransformer = (response: AnyObject?) -> GenomeMappableRawType?
 typealias SlugValidityCheck = (slugValue: AnyObject?, slugPath: String?) -> Bool
 typealias SlugValueForPath = (slug: AnyObject?, slugPath: String?) -> AnyObject?
 
-public final class Endpoint<T,U where T : EndpointDescriptor, T : NSObject, U : GenomeObject> {
+public class Endpoint<T,U where T : EndpointDescriptor, T : NSObject, U : GenomeObject> {
     
     // MARK: TypeAliases
     
@@ -341,6 +341,12 @@ class ArtistsEndpointDescriptor : BaseEndpointDescriptor {
 
 typealias ArtistsEndpoint = Endpoint<ArtistsEndpointDescriptor, SpotifyArtist>
 
+class ArtistsSearchEndpoint : Endpoint<ArtistsEndpointDescriptor, SpotifyArtist> {
+    init(query: String) {
+        super.init(slug: nil, parameters: ["q" : query, "type" : "artist"])
+    }
+}
+
 // MARK: Testing
 
 class Test : NSObject {
@@ -351,7 +357,7 @@ class Test : NSObject {
 }
 
 func TEST_ALT() {
-    let ep = ArtistsEndpoint(parameters: ["q" : "beyonce", "type" : "artist"])
+    let ep = ArtistsSearchEndpoint(query: "beyonce")
     ep.get { (response) -> Void in
         switch response {
         case .Result(let artists):
