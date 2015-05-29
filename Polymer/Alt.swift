@@ -341,7 +341,9 @@ class ArtistsEndpointDescriptor : BaseEndpointDescriptor {
 
 typealias ArtistsEndpoint = Endpoint<ArtistsEndpointDescriptor, SpotifyArtist>
 
-class ArtistsSearchEndpoint : Endpoint<ArtistsEndpointDescriptor, SpotifyArtist> {
+public final class NonGenericSubclass {}
+
+class ArtistsSearchEndpoint<T : NonGenericSubclass> : Endpoint<ArtistsEndpointDescriptor, SpotifyArtist> {
     init(query: String) {
         super.init(slug: nil, parameters: ["q" : query, "type" : "artist"])
     }
