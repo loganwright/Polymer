@@ -39,6 +39,10 @@ public enum Response<T : GenomeObject> {
 
 // MARK: Endpoint
 
+typealias ResponseTransformer = (response: AnyObject?) -> GenomeMappableRawType?
+typealias SlugValidityCheck = (slugValue: AnyObject?, slugPath: String?) -> Bool
+typealias SlugValueForPath = (slug: AnyObject?, slugPath: String?) -> AnyObject?
+
 public final class Endpoint<T,U where T : EndpointDescriptor, T : NSObject, U : GenomeObject> {
     
     // MARK: TypeAliases
@@ -61,6 +65,12 @@ public final class Endpoint<T,U where T : EndpointDescriptor, T : NSObject, U : 
     
     var shouldAppendHeaderToResponse: Bool { return descriptor.shouldAppendHeaderToResponse ?? false }
     
+    // MARK: Transformer 
+    
+    var responseTransformer: ResponseTransformer?
+    var slugValidityCheck: SlugValidityCheck?
+    var slugValueForPath: SlugValueForPath?
+    
     // MARK: Private Properties
     // TODO: Possibly allow updating slug?  in didSet, update `ep`
     
@@ -70,7 +80,7 @@ public final class Endpoint<T,U where T : EndpointDescriptor, T : NSObject, U : 
     private let slug: AnyObject?
     private let parameters: PLYParameterEncodableType?
     
-    private var ep: BackingEndpoint!
+    private lazy var ep: BackingEndpoint! = BackingEndpoint(endpoint: self)
     
     // MARK: Initialization
     
@@ -89,7 +99,6 @@ public final class Endpoint<T,U where T : EndpointDescriptor, T : NSObject, U : 
     required public init(slug: AnyObject?, parameters: PLYParameterEncodableType?) {
         self.slug = slug
         self.parameters = parameters
-        self.ep = BackingEndpoint(endpoint: self)
     }
     
     // MARK: Networking
@@ -164,6 +173,12 @@ private final class BackingEndpoint : PLYEndpoint {
     private let _responseSerializer: AFHTTPResponseSerializer?
     private let _shouldAppendHeaderToResponse: Bool
     
+    // MARK: Transformer
+    
+    private let _responseTransformer: ResponseTransformer?
+    private let _slugValidityCheck: SlugValidityCheck?
+    private let _slugValueForPath: SlugValueForPath?
+    
     // MARK: Initialization
     
     init<T : EndpointDescriptor, U : GenomeObject>(endpoint: Endpoint<T,U>) {
@@ -188,6 +203,12 @@ private final class BackingEndpoint : PLYEndpoint {
         // MARK: Header Values
         
         _shouldAppendHeaderToResponse = endpoint.shouldAppendHeaderToResponse
+        
+        // MARK: Transformer
+
+        _responseTransformer = endpoint.responseTransformer
+        _slugValidityCheck = endpoint.slugValidityCheck
+        _slugValueForPath = endpoint.slugValueForPath
         
         // MARK: Actual Initializer
         
@@ -251,6 +272,34 @@ private final class BackingEndpoint : PLYEndpoint {
     override var responseSerializer: AFHTTPResponseSerializer? {
         return _responseSerializer
     }
+    
+    // MARK: Slugs
+    
+    override func valueIsValid(value: AnyObject!, forSlugPath slugPath: String!) -> Bool {
+        if let slugValidityCheck = _slugValidityCheck {
+            return slugValidityCheck(slugValue: value, slugPath: slugPath)
+        } else {
+            return super.valueIsValid(value, forSlugPath: slugPath)
+        }
+    }
+    
+    private override func valueForSlugPath(slugPath: String!, withSlug slug: AnyObject!) -> AnyObject! {
+        if let slugValueForPath = _slugValueForPath {
+            return slugValueForPath(slug: slug, slugPath: slugPath)
+        } else {
+            return super.valueForSlugPath(slugPath, withSlug: slug)
+        }
+    }
+    
+    // MARK: Raw Response Transformer
+    
+    private override func transformResponseToMappableRawType(response: AnyObject?) -> GenomeMappableRawType? {
+        if let responseTransformer = _responseTransformer, let transformed = responseTransformer(response: response) {
+            return transformed
+        } else {
+            return super.transformResponseToMappableRawType(response)
+        }
+    }
 }
 
 // MARK: NSError
@@ -300,7 +349,6 @@ class Test : NSObject {
         TEST_ALT()
     }
 }
-
 
 func TEST_ALT() {
     let ep = ArtistsEndpoint(parameters: ["q" : "beyonce", "type" : "artist"])
