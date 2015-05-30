@@ -7,7 +7,6 @@
 //
 
 #import "AppDelegate.h"
-#import "Polymer-Swift.h"
 
 @interface AppDelegate ()
 
@@ -18,7 +17,6 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-    [Test test];
     return YES;
 }
 

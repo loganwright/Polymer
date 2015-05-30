@@ -9,13 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <Genome/Genome.h>
 
-/**
- *  This is an empty class to satisfy `returnClass` requirements of PLYEndpoint.  `SpotifyObject` only returns success / failure
- */
-@interface SpotifyObject : NSObject <GenomeObject>
-@end
-
-@interface SpotifyArtist : SpotifyObject <GenomeObject>
+@interface SpotifyArtist : NSObject <GenomeObject>
 @property (strong, nonatomic) NSURL *externalSpotifyUrl;
 @property (nonatomic) NSInteger numberOfFollowers;
 @property (strong, nonatomic) NSArray *genres;
