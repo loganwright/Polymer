@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		802BF0D51B16B270005A62C3 /* Alt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 802BF0D41B16B270005A62C3 /* Alt.swift */; };
 		8047ABC31A9FF411008093A4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8047ABC21A9FF411008093A4 /* main.m */; };
 		8047ABC61A9FF411008093A4 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8047ABC51A9FF411008093A4 /* AppDelegate.m */; };
 		8047ABCC1A9FF411008093A4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8047ABCA1A9FF411008093A4 /* Main.storyboard */; };
@@ -20,6 +19,9 @@
 		8047ABF81A9FF586008093A4 /* SpotifyArtist.m in Sources */ = {isa = PBXBuildFile; fileRef = 8047ABF31A9FF586008093A4 /* SpotifyArtist.m */; };
 		8047ABF91A9FF586008093A4 /* SpotifyImageRef.m in Sources */ = {isa = PBXBuildFile; fileRef = 8047ABF51A9FF586008093A4 /* SpotifyImageRef.m */; };
 		8047ABFA1A9FF586008093A4 /* SpotifyEndpoints.m in Sources */ = {isa = PBXBuildFile; fileRef = 8047ABF71A9FF586008093A4 /* SpotifyEndpoints.m */; };
+		80D898A01B1945A400DCE67E /* Examples.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80D8989F1B1945A400DCE67E /* Examples.swift */; };
+		80D898A21B1946E300DCE67E /* PolymerSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80D898A11B1946E300DCE67E /* PolymerSwift.swift */; };
+		80D898A41B19472600DCE67E /* BackingEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80D898A31B19472600DCE67E /* BackingEndpoint.swift */; };
 		9F276AD54BD3DF0E8A87EECA /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DE0383B994C08B693808D1F3 /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -35,7 +37,6 @@
 
 /* Begin PBXFileReference section */
 		3012B6C3FE5EB86E20D2425A /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
-		802BF0D41B16B270005A62C3 /* Alt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Alt.swift; sourceTree = "<group>"; };
 		8047ABBD1A9FF411008093A4 /* Polymer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Polymer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8047ABC11A9FF411008093A4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8047ABC21A9FF411008093A4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = main.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -60,7 +61,9 @@
 		8047ABF61A9FF586008093A4 /* SpotifyEndpoints.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpotifyEndpoints.h; sourceTree = "<group>"; };
 		8047ABF71A9FF586008093A4 /* SpotifyEndpoints.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpotifyEndpoints.m; sourceTree = "<group>"; };
 		806D78CA1AE856CA00A71CB0 /* Polymer-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Polymer-Bridging-Header.h"; sourceTree = "<group>"; };
-		806D78CB1AE856CA00A71CB0 /* PolymerSwift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PolymerSwift.swift; path = Swift/PolymerSwift.swift; sourceTree = "<group>"; };
+		80D8989F1B1945A400DCE67E /* Examples.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Examples.swift; sourceTree = "<group>"; };
+		80D898A11B1946E300DCE67E /* PolymerSwift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PolymerSwift.swift; path = Swift/PolymerSwift.swift; sourceTree = "<group>"; };
+		80D898A31B19472600DCE67E /* BackingEndpoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BackingEndpoint.swift; path = Swift/BackingEndpoint.swift; sourceTree = "<group>"; };
 		A0FBB3DBC2B8B49B82E248CB /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		DE0383B994C08B693808D1F3 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -201,8 +204,9 @@
 		806D78C91AE856B300A71CB0 /* Swift */ = {
 			isa = PBXGroup;
 			children = (
-				806D78CB1AE856CA00A71CB0 /* PolymerSwift.swift */,
-				802BF0D41B16B270005A62C3 /* Alt.swift */,
+				80D8989F1B1945A400DCE67E /* Examples.swift */,
+				80D898A11B1946E300DCE67E /* PolymerSwift.swift */,
+				80D898A31B19472600DCE67E /* BackingEndpoint.swift */,
 			);
 			name = Swift;
 			sourceTree = "<group>";
@@ -344,12 +348,14 @@
 			files = (
 				8047ABEC1A9FF534008093A4 /* PLYNetworking.m in Sources */,
 				8047ABEB1A9FF534008093A4 /* PLYEndpoint.m in Sources */,
-				802BF0D51B16B270005A62C3 /* Alt.swift in Sources */,
 				8047ABC61A9FF411008093A4 /* AppDelegate.m in Sources */,
+				80D898A21B1946E300DCE67E /* PolymerSwift.swift in Sources */,
 				8047ABF91A9FF586008093A4 /* SpotifyImageRef.m in Sources */,
 				8047ABC31A9FF411008093A4 /* main.m in Sources */,
 				8047ABEF1A9FF544008093A4 /* ViewController.m in Sources */,
+				80D898A41B19472600DCE67E /* BackingEndpoint.swift in Sources */,
 				8047ABF81A9FF586008093A4 /* SpotifyArtist.m in Sources */,
+				80D898A01B1945A400DCE67E /* Examples.swift in Sources */,
 				8047ABFA1A9FF586008093A4 /* SpotifyEndpoints.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

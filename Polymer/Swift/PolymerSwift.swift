@@ -2,178 +2,92 @@
 //  PolymerSwift.swift
 //  Polymer
 //
-//  Created by Logan Wright on 4/22/15.
+//  Created by Logan Wright on 5/29/15.
 //  Copyright (c) 2015 LowriDevs. All rights reserved.
 //
 
-/*
-endpoint.get.then
-*/
+import Foundation
 
-// MARK: Result
+// MARK: TypeAliases
 
-enum Response<T : GenomeObject> {
+public typealias ResponseTransformer = (response: AnyObject?) -> GenomeMappableRawType?
+public typealias SlugValidityCheck = (slugValue: AnyObject?, slugPath: String?) -> Bool
+public typealias SlugValueForPath = (slug: AnyObject?, slugPath: String?) -> AnyObject?
+
+// MARK: Response
+
+public enum Response<T : GenomeObject> {
     case Result([T])
     case Error(NSError)
 }
 
-internal class BackingEndpoint : PLYEndpoint {
-    
-    // MARK: Required Properties
-    
-    private let _returnClass: AnyClass
-    private let _endpointUrl: String
-    private let _baseUrl: String
-    
-    // MARK: Optional Properties
-    
-    private let _responseKeyPath: String?
-    private let _acceptableContentTypes: Set<String>?
-    private let _headerFields: [String : AnyObject]?
-    private let _requestSerializer: AFHTTPRequestSerializer?
-    private let _responseSerializer: AFHTTPResponseSerializer?
-    private let _shouldAppendHeaderToResponse: Bool
-    
-    // MARK: Initialization
-    
-    init<T : EndpointDescriptor, U : GenomeObject>(endpoint: AltEndpoint<T,U>) {
-        
-        // MARK: Required
-        
-        _baseUrl = endpoint.baseUrl
-        _returnClass = endpoint.returnClass
-        _endpointUrl = endpoint.endpointUrl
-        
-        // MARK: Optional
-        
-        _responseKeyPath = endpoint.responseKeyPath
-        _acceptableContentTypes = endpoint.acceptableContentTypes
-        _headerFields = endpoint.headerFields
-        
-        // MARK: Serializers
-        
-        _requestSerializer = endpoint.requestSerializer
-        _responseSerializer = endpoint.responseSerializer
-        
-        // MARK: Header Values
-        
-        _shouldAppendHeaderToResponse = endpoint.shouldAppendHeaderToResponse
-        
-        // MARK: Actual Initializer
-        
-        super.init(slug: endpoint.slug, andParameters: endpoint.parameters)
-    }
-    
-    init<T : GenomeObject>(endpoint: Endpoint<T>) {
-        
-        // MARK: Required
-        
-        _baseUrl = endpoint.baseUrl
-        _returnClass = endpoint.returnClass
-        _endpointUrl = endpoint.endpointUrl
-        
-        // MARK: Optional
-        
-        _responseKeyPath = endpoint.responseKeyPath
-        _acceptableContentTypes = endpoint.acceptableContentTypes
-        _headerFields = endpoint.headerFields
-        
-        // MARK: Serializers
-        
-        _requestSerializer = endpoint.requestSerializer
-        _responseSerializer = endpoint.responseSerializer
-        
-        // MARK: Header Values
-        
-        _shouldAppendHeaderToResponse = endpoint.shouldAppendHeaderToResponse
-        
-        // MARK: Actual Initializer
-        
-        super.init(slug: endpoint.slug, andParameters: endpoint.parameters)
-    }
-    
-    // MARK: Required Overrides
-    
-    override var baseUrl: String {
-        return _baseUrl
-    }
+// MARK: Operation Type
 
-    override var returnClass: AnyClass {
-        return _returnClass
-    }
-    
-    override var endpointUrl: String {
-        return _endpointUrl
-    }
-    
-    // MARK: Optional Overrides
-    
-    override var responseKeyPath: String? {
-        return _responseKeyPath
-    }
-    
-    override var acceptableContentTypes: Set<NSObject>? {
-        var acceptableContentTypes = Set<NSObject>()
-        
-        // Can't just convert to 'Set<NSObject>' for whatever reason
-        if let types = _acceptableContentTypes {
-            for type in types {
-                acceptableContentTypes.insert(type)
-            }
-        }
-        return acceptableContentTypes
-    }
-    
-    override var headerFields: [NSObject : AnyObject]? {
-        var headerFields: [NSObject : AnyObject] = [:]
-        
-        // Can't just convert to '[NSObject : AnyObject]' for whatever reason
-        if let fields = _headerFields {
-            for (key,val) in fields {
-                headerFields[key] = val
-            }
-        }
-        return headerFields
-    }
-    
-    override var shouldAppendHeaderToResponse: Bool {
-        return _shouldAppendHeaderToResponse
-    }
-    
-    // MARK: Serializers
-    
-    override var requestSerializer: AFHTTPRequestSerializer? {
-        return _requestSerializer
-    }
-    
-    override var responseSerializer: AFHTTPResponseSerializer? {
-        return _responseSerializer
-    }
+public enum OperationType {
+    case Get
+    case Post
+    case Put
+    case Patch
+    case Delete
 }
 
-public class Endpoint<T : GenomeObject> {
+// MARK: Endpoint Descriptor
+
+public class EndpointDescriptor {
     
-    final let returnClass = T.self
+    final private(set) var currentOperation: OperationType = .Get
     
     // MARK: Required Properties
     
-    var baseUrl: String { fatalError("Must override") }
-    var endpointUrl: String { fatalError("Must override") }
+    var baseUrl: String { fatalError("Must Override") }
+    var endpointUrl: String { fatalError("Must Override") }
     
     // MARK: Optional Properties
     
     var responseKeyPath: String? { return nil }
     var acceptableContentTypes: Set<String>? { return nil }
     var headerFields: [String : AnyObject]? { return nil }
-    var requestSerializer: AFHTTPRequestSerializer? { return AFJSONRequestSerializer(writingOptions: .PrettyPrinted) }
-    var responseSerializer: AFHTTPResponseSerializer? { return AFJSONResponseSerializer(readingOptions: .allZeros) }
+    var requestSerializer: AFHTTPRequestSerializer? { return nil }
+    var responseSerializer: AFHTTPResponseSerializer? { return nil }
+    var shouldAppendHeaderToResponse: Bool { return false }
     
-    var shouldAppendHeaderToResponse: Bool = false
+    // MARK: Response Transformer
+    
+    var responseTransformer: ResponseTransformer? { return nil }
+    
+    // MARK: Slug Interaction
+    
+    var slugValidityCheck: SlugValidityCheck? { return nil }
+    var slugValueForPath: SlugValueForPath? { return nil }
     
     // MARK: Initialization
     
-    private(set) var slug: AnyObject?
-    private(set) var parameters: PLYParameterEncodableType?
+    required public init() {}
+}
+
+// MARK: Endpoint
+
+public class Endpoint<T,U where T : EndpointDescriptor, U : GenomeObject> {
+    
+    // MARK: TypeAliases
+    
+     typealias ResponseBlock = (response: Response<U>) -> Void
+    private typealias ObjCResponseBlock = (result: AnyObject?, error: NSError?) -> Void
+    
+    // MARK: Private Properties
+    
+    final let descriptor = T()
+    
+    final let slug: AnyObject?
+    final let parameters: PLYParameterEncodableType?
+    
+    private final lazy var ep: BackingEndpoint! = BackingEndpoint(endpoint: self)
+    
+    // MARK: Initialization
+    
+    convenience init() {
+        self.init(slug: nil, parameters: nil)
+    }
     
     convenience init(slug: AnyObject?) {
         self.init(slug: slug, parameters: nil)
@@ -188,72 +102,65 @@ public class Endpoint<T : GenomeObject> {
         self.parameters = parameters
     }
     
-    class func endpoint(slug: AnyObject? = nil, parameters: PLYParameterEncodableType?) -> Self {
-        return self(slug: slug, parameters: parameters)
-    }
-    
     // MARK: Networking
     
-    func get(completion: (response: Response<T>) -> Void) {
-        let ep = BackingEndpoint(endpoint: self)
-        ep.getWithCompletion { (result, error) -> Void in
-            let response: Response<T>
-            if let _result = result as? [T] {
+    func get(responseBlock: ResponseBlock) {
+        descriptor.currentOperation = .Get
+        let wrappedCompletion = objcResponseBlockForResponseBlock(responseBlock)
+        ep.getWithCompletion(wrappedCompletion)
+    }
+    
+    func post(responseBlock: ResponseBlock) {
+        descriptor.currentOperation = .Post
+        let wrappedCompletion = objcResponseBlockForResponseBlock(responseBlock)
+        ep.postWithCompletion(wrappedCompletion)
+    }
+    
+    func put(responseBlock: ResponseBlock) {
+        descriptor.currentOperation = .Put
+        let wrappedCompletion = objcResponseBlockForResponseBlock(responseBlock)
+        ep.putWithCompletion(wrappedCompletion)
+    }
+    
+    func patch(responseBlock: ResponseBlock) {
+        descriptor.currentOperation = .Patch
+        let wrappedCompletion = objcResponseBlockForResponseBlock(responseBlock)
+        ep.putWithCompletion(wrappedCompletion)
+    }
+    
+    func delete(responseBlock: ResponseBlock) {
+        descriptor.currentOperation = .Delete
+        let wrappedCompletion = objcResponseBlockForResponseBlock(responseBlock)
+        ep.deleteWithCompletion(wrappedCompletion)
+    }
+    
+    /*!
+    Used to map the objc response to the swift response
+    
+    :param: completion the completion passed by the user to call with the Result
+    */
+    private func objcResponseBlockForResponseBlock(responseBlock: ResponseBlock) -> ObjCResponseBlock {
+        return { (result, error) -> Void in
+            let response: Response<U>
+            if let _result = result as? [U] {
                 response = .Result(_result)
-            } else if let _result = result as? T {
+            } else if let _result = result as? U {
                 response = .Result([_result])
             } else if let _error = error {
                 response = .Error(_error)
             } else {
-                let err = NSError.errorWithDescription("No Result: \(result) or Error: \(error).  Unknown.")
+                let err = NSError(message: "No Result: \(result) or Error: \(error).  Unknown.")
                 response = .Error(err)
             }
-            completion(response: response)
+            responseBlock(response: response)
         }
     }
 }
 
-extension NSError {
-    class func errorWithDescription(description: String) -> NSError {
-        return NSError(domain: "PolymerError", code: 1, userInfo: [NSLocalizedDescriptionKey : description])
-    }
-}
+// MARK: Error
 
-//class SpotifyBaseEndpoint<T where T : SpotifyObject, T : GenomeObject>  : Endpoint<T> {
-class SpotifyBaseEndpoint<T : GenomeObject>  : Endpoint<T> {
-    override var baseUrl: String {
-        return "https://api.spotify.com/v1"
-    }
-    
-    required init(slug: AnyObject? = nil, parameters: PLYParameterEncodableType? = nil) {
-        super.init(slug: slug, parameters: parameters)
-        //        endpointUrl = "search"
-        //        responseKeyPath = "artists.items"
-    }
-}
-
-//class SpotifySearchEndpoint<T where T : SpotifyArtist, T : GenomeObject> : SpotifyBaseEndpoint<T> {
-class SpotifySearchEndpoint<T : GenomeObject> : SpotifyBaseEndpoint<T> {
-    override var endpointUrl: String { return "search" }
-    override var responseKeyPath: String? { return "artists.items" }
-    required init(slug: AnyObject? = nil, parameters: PLYParameterEncodableType? = nil) {
-        super.init(slug: slug, parameters: parameters)
-    }
-}
-
-class Test : NSObject {
-    class func test() {
-        println("-- TESTING -- \n\n\n\n\n")
-        TEST_ALT()
-        println("\n\n\n\n")
-        let ep = SpotifySearchEndpoint<SpotifyArtist>.endpoint(slug: nil, parameters: ["q" : "beyonce", "type" : "artist"])
-        ep.get { (response) -> Void in
-            switch response {
-            case .Result(let artists):
-                println("Got: \(artists) ")
-            case .Error(let err):
-                println("Got err: \(err)")
-            }
-        }
+private extension NSError {
+    convenience init(code: Int = 1, message: String) {
+        self.init(domain: "com.polymer.errordomain", code: 1, userInfo: [NSLocalizedDescriptionKey : message])
     }
 }
