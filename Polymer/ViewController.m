@@ -25,10 +25,10 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
-    PLYEndpoint *ep = [SpotifySearchEndpoint endpointWithParameters:@{@"q" : @"beyonce", @"type" : @"artist"}];
-    [ep getWithCompletion:^(NSArray *artists, NSError *error) {
-        NSLog(@"Got artists: %@ w/ error: %@", artists, error);
-    }];
+//    PLYEndpoint *ep = [SpotifySearchEndpoint endpointWithParameters:@{@"q" : @"beyonce", @"type" : @"artist"}];
+//    [ep getWithCompletion:^(NSArray *artists, NSError *error) {
+//        NSLog(@"Got artists: %@ w/ error: %@", artists, error);
+//    }];
 }
 
 - (void)didReceiveMemoryWarning {
