@@ -81,7 +81,7 @@ Polymer relies on <a href="https://github.com/AFNetworking/AFNetworking">AFNetwo
 
 If you wish to install the library manually, you'll need to also include <a href="https://github.com/AFNetworking/AFNetworking">AFNetworking</a> and <a href="https://github.com/LoganWright/Genome">Genome</a>
 
-It is highly recommended that you install Polymer through <a href="cocoapods.org">cocoapods.</a>  Here is a personal cocoapods reference just in case it may be of use: <a href="https://gist.github.com/LoganWright/5aa9b3deb71e9de628ba">Cocoapods Setup Guide</a>
+It is highly recommended that you install Polymer through <a href="https://www.cocoapods.org">cocoapods.</a>  Here is a personal cocoapods reference just in case it may be of use: <a href="https://gist.github.com/LoganWright/5aa9b3deb71e9de628ba">Cocoapods Setup Guide</a>
 
 Podfile: `pod 'Polymer'`
 <br>Import: `#import <Polymer/PLYEndpoint.h>`
